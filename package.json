@@ -1,0 +1,25 @@
+{
+  "name": "eliet-aeis",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 45654",
+    "build": "vite build",
+    "preview": "vite preview --port 45654"
+  },
+  "dependencies": {
+    "ant-design-vue": "^4.0.0",
+    "axios": "^1.6.0",
+    "dayjs": "^1.11.10",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.1",
+    "sortablejs": "^1.15.0",
+    "vue": "^3.3.11",
+    "vue-router": "^4.2.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.4.0",
+    "vite": "^4.4.9"
+  }
+}
