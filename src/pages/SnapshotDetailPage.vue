@@ -1,7 +1,7 @@
 <template>
   <div class="snapshot-detail-page">
     <template v-if="snapshotInfo">
-      <section class="page-hero glass-card">
+      <section class="page-hero surface-card">
         <div class="hero-main">
           <div class="hero-text">
             <span class="hero-kicker">ELITE EDU / SNAPSHOT</span>
@@ -25,33 +25,33 @@
         <div class="hero-metrics">
           <div class="metric-card">
             <span class="metric-label">课程费用</span>
-            <span class="metric-value">¥{{ formatCurrency(statistics.course_total) }}</span>
+            <span class="metric-value metric-multiline">{{ formatTotals(statistics.course_totals) }}</span>
           </div>
           <div class="metric-card">
             <span class="metric-label">额外费用</span>
-            <span class="metric-value">¥{{ formatCurrency(statistics.extra_total) }}</span>
+            <span class="metric-value metric-multiline">{{ formatTotals(statistics.extra_totals) }}</span>
           </div>
           <div class="metric-card highlight">
             <span class="metric-label">应付总额</span>
-            <span class="metric-value">¥{{ formatCurrency(statistics.total_cost) }}</span>
+            <span class="metric-value metric-multiline">{{ formatTotals(statistics.grand_totals) }}</span>
           </div>
         </div>
       </section>
 
       <div class="content-grid">
-        <a-card class="glass-card summary-card" :bordered="false">
+        <a-card class="surface-card summary-card" :bordered="false">
           <a-descriptions :column="3" bordered size="small">
             <a-descriptions-item label="学生">{{ snapshotInfo.student_name || '未命名学生' }}</a-descriptions-item>
             <a-descriptions-item label="月份">{{ snapshotInfo.year_month }}</a-descriptions-item>
             <a-descriptions-item label="保存时间">{{ formatDate(snapshotInfo.created_at) }}</a-descriptions-item>
-            <a-descriptions-item label="课程费用">¥{{ formatCurrency(statistics.course_total) }}</a-descriptions-item>
-            <a-descriptions-item label="额外费用">¥{{ formatCurrency(statistics.extra_total) }}</a-descriptions-item>
-            <a-descriptions-item label="总费用">¥{{ formatCurrency(statistics.total_cost) }}</a-descriptions-item>
+            <a-descriptions-item label="课程费用">{{ formatTotals(statistics.course_totals) }}</a-descriptions-item>
+            <a-descriptions-item label="额外费用">{{ formatTotals(statistics.extra_totals) }}</a-descriptions-item>
+            <a-descriptions-item label="总费用">{{ formatTotals(statistics.grand_totals) }}</a-descriptions-item>
           </a-descriptions>
         </a-card>
 
         <div class="layout">
-          <a-card class="glass-card calendar-card" :bordered="false">
+          <a-card class="surface-card calendar-card" :bordered="false">
             <template #title>
               <div class="card-title">
                 <span class="card-icon">📅</span>
@@ -83,7 +83,7 @@
           </a-card>
 
           <div class="side-panels">
-            <a-card class="glass-card stats-card" :bordered="false">
+            <a-card class="surface-card stats-card" :bordered="false">
               <template #title>
                 <div class="card-title">
                   <span class="card-icon">📊</span>
@@ -97,9 +97,12 @@
                 :pagination="false"
                 row-key="record => record.course_name"
               >
-                <template #bodyCell="{ column, text }">
+                <template #bodyCell="{ column, text, record }">
                   <template v-if="column.key === 'price_per_class' || column.key === 'total'">
-                    ¥{{ formatCurrency(text) }}
+                    {{ formatAmount(text, record.currency || 'CNY') }}
+                  </template>
+                  <template v-else-if="column.key === 'course_time'">
+                    {{ record.course_time || '—' }}
                   </template>
                   <template v-else>
                     {{ text }}
@@ -108,7 +111,7 @@
               </a-table>
             </a-card>
 
-            <a-card class="glass-card stats-card" :bordered="false">
+            <a-card class="surface-card stats-card" :bordered="false">
               <template #title>
                 <div class="card-title">
                   <span class="card-icon">🧾</span>
@@ -122,9 +125,9 @@
                 :pagination="false"
                 row-key="record => record.uid"
               >
-                <template #bodyCell="{ column, text }">
+                <template #bodyCell="{ column, text, record }">
                   <template v-if="column.key === 'amount'">
-                    ¥{{ formatCurrency(text) }}
+                    {{ formatAmount(text, record.currency || 'CNY') }}
                   </template>
                   <template v-else>
                     {{ text }}
@@ -148,6 +151,15 @@
     >
       <div class="invoice-preview" v-if="snapshotInfo">
         <div class="invoice-sheet" ref="invoicePreviewRef">
+          <div class="invoice-green-header">
+            <div class="invoice-header-left">
+              <img :src="logoUrl" alt="Elite Edu Logo" class="invoice-logo" />
+            </div>
+            <div class="invoice-header-right">
+              <div class="invoice-title">School Fee Invoice</div>
+              <div class="invoice-subtitle">ELITE EDUCATION CENTER</div>
+            </div>
+          </div>
           <div class="invoice-header">
             <div>
               <h2>School Fee Invoice</h2>
@@ -173,9 +185,12 @@
               size="small"
               row-key="record => record.course_name"
             >
-              <template #bodyCell="{ column, text }">
+              <template #bodyCell="{ column, text, record }">
                 <template v-if="column.key === 'price_per_class' || column.key === 'total'">
-                  ¥{{ formatCurrency(text) }}
+                  {{ formatAmount(text, record.currency || 'CNY') }}
+              </template>
+              <template v-else-if="column.key === 'course_time'">
+                {{ record.course_time || '—' }}
                 </template>
                 <template v-else>
                   {{ text }}
@@ -193,9 +208,9 @@
               size="small"
               row-key="record => record.uid || `${record.name}-${record.expense_date}`"
             >
-              <template #bodyCell="{ column, text }">
+              <template #bodyCell="{ column, text, record }">
                 <template v-if="column.key === 'amount'">
-                  ¥{{ formatCurrency(text) }}
+                  {{ formatAmount(text, record.currency || 'CNY') }}
                 </template>
                 <template v-else>
                   {{ text }}
@@ -207,15 +222,15 @@
           <div class="invoice-summary">
             <div class="summary-row">
               <span>Course Total / 课程费用</span>
-              <span>¥{{ formatCurrency(statistics.course_total) }}</span>
+              <span class="summary-amount">{{ formatTotals(statistics.course_totals) }}</span>
             </div>
             <div class="summary-row">
               <span>Additional Total / 额外费用</span>
-              <span>¥{{ formatCurrency(statistics.extra_total) }}</span>
+              <span class="summary-amount">{{ formatTotals(statistics.extra_totals) }}</span>
             </div>
             <div class="summary-row grand">
               <span>Grand Total / 应付总额</span>
-              <span>¥{{ formatCurrency(statistics.total_cost) }}</span>
+              <span class="summary-amount">{{ formatTotals(statistics.grand_totals) }}</span>
             </div>
           </div>
         </div>
@@ -244,13 +259,18 @@ const route = useRoute();
 const router = useRouter();
 const snapshotId = route.params.id;
 
+const logoUrl = new URL('../assets/elite-logo.png', import.meta.url).href;
+
 const snapshotInfo = ref(null);
 const lessonsMap = reactive({});
 const extraExpenses = ref([]);
 const statistics = reactive({
   course_statistics: [],
-  course_total: 0,
+  course_totals: [],
   extra_expenses: [],
+  extra_totals: [],
+  grand_totals: [],
+  course_total: 0,
   extra_total: 0,
   total_cost: 0,
 });
@@ -263,6 +283,7 @@ const weekDays = ['星期一', '星期二', '星期三', '星期四', '星期五
 
 const courseColumns = [
   { title: '课程名称', dataIndex: 'course_name', key: 'course_name' },
+  { title: '上课时间', dataIndex: 'course_time', key: 'course_time' },
   { title: '课时数', dataIndex: 'count', key: 'count' },
   { title: '单价', dataIndex: 'price_per_class', key: 'price_per_class' },
   { title: '小计', dataIndex: 'total', key: 'total' },
@@ -277,9 +298,10 @@ const extraColumns = [
 
 const invoiceCourseColumns = [
   { title: 'Description', dataIndex: 'course_name', key: 'course_name' },
-  { title: 'Unit Price (SGD)', dataIndex: 'price_per_class', key: 'price_per_class' },
+  { title: 'Class Time', dataIndex: 'course_time', key: 'course_time' },
+  { title: 'Unit Price', dataIndex: 'price_per_class', key: 'price_per_class' },
   { title: 'Quantity', dataIndex: 'count', key: 'count' },
-  { title: 'Total (SGD)', dataIndex: 'total', key: 'total' },
+  { title: 'Total', dataIndex: 'total', key: 'total' },
 ];
 
 const invoiceExtraColumns = [
@@ -368,14 +390,70 @@ function getCourseColor(cssClass) {
   return map[cssClass] || 'blue';
 }
 
-function formatCurrency(value) {
-  if (!value) return '0.00';
-  return Number(value).toFixed(2);
+function getCurrencySymbol(currency = 'CNY') {
+  const map = {
+    CNY: '¥',
+    SGD: 'S$',
+    USD: '$',
+  };
+  return map[currency] || `${currency} `;
+}
+
+function formatAmount(amount, currency = 'CNY') {
+  const symbol = getCurrencySymbol(currency);
+  const value = Number(amount) || 0;
+  return `${symbol}${value.toFixed(2)}`;
+}
+
+function formatTotals(totals = []) {
+  if (!Array.isArray(totals) || !totals.length) {
+    return formatAmount(0, 'CNY');
+  }
+  return totals
+    .map((item) => formatAmount(item?.amount ?? 0, item?.currency ?? 'CNY'))
+    .join('\n');
+}
+
+function formatCurrency(value, currency = 'CNY') {
+  if (!value) return formatAmount(0, currency);
+  return formatAmount(value, currency);
 }
 
 function formatDate(value, format = 'YYYY-MM-DD HH:mm') {
   if (!value) return '--';
   return dayjs(value).format(format);
+}
+
+function buildCourseTimeLookup() {
+  const byId = new Map();
+  const byName = new Map();
+  Object.values(lessonsMap).forEach((items) => {
+    if (!Array.isArray(items)) return;
+    items.forEach((lesson) => {
+      if (!lesson || !lesson.course_time) return;
+      if (lesson.course_id != null && !byId.has(lesson.course_id)) {
+        byId.set(lesson.course_id, lesson.course_time);
+      }
+      const nameKey = lesson.course_name;
+      if (nameKey && !byName.has(nameKey)) {
+        byName.set(nameKey, lesson.course_time);
+      }
+    });
+  });
+  return { byId, byName };
+}
+
+function ensureCourseTimes(courseStats) {
+  if (!Array.isArray(courseStats) || !courseStats.length) return;
+  const { byId, byName } = buildCourseTimeLookup();
+  courseStats.forEach((item) => {
+    if (item.course_time) return;
+    if (item.course_id != null && byId.has(item.course_id)) {
+      item.course_time = byId.get(item.course_id);
+    } else if (item.course_name && byName.has(item.course_name)) {
+      item.course_time = byName.get(item.course_name);
+    }
+  });
 }
 
 async function fetchSnapshot() {
@@ -401,13 +479,22 @@ async function fetchSnapshot() {
       ...item,
     }));
 
-    Object.assign(statistics, {
-      course_statistics: data.statistics?.course_statistics || [],
-      course_total: data.statistics?.course_total || 0,
-      extra_expenses: data.statistics?.extra_expenses || [],
-      extra_total: data.statistics?.extra_total || 0,
-      total_cost: data.statistics?.total_cost || 0,
-    });
+    const statsPayload = data.statistics || {};
+    statistics.course_statistics = (statsPayload.course_statistics || []).map((item) => ({
+      ...item,
+      currency: item.currency || 'CNY',
+    }));
+    ensureCourseTimes(statistics.course_statistics);
+    statistics.course_totals = statsPayload.course_totals || [];
+    statistics.extra_expenses = (statsPayload.extra_expenses || []).map((item) => ({
+      ...item,
+      currency: item.currency || 'CNY',
+    }));
+    statistics.extra_totals = statsPayload.extra_totals || [];
+    statistics.grand_totals = statsPayload.grand_totals || [];
+    statistics.course_total = statsPayload.course_total || 0;
+    statistics.extra_total = statsPayload.extra_total || 0;
+    statistics.total_cost = statsPayload.total_cost || 0;
   } catch (error) {
     message.error(`加载快照失败：${error.message}`);
     router.push({ name: 'snapshot-list' });
@@ -480,69 +567,49 @@ onMounted(() => {
 .snapshot-detail-page {
   display: flex;
   flex-direction: column;
-  gap: 28px;
-  color: #e2e8f0;
-}
-
-.glass-card {
-  background: linear-gradient(150deg, rgba(15, 23, 42, 0.82), rgba(17, 24, 39, 0.88));
-  border-radius: 20px;
-  border: 1px solid rgba(148, 163, 184, 0.16);
-  box-shadow: 0 28px 60px rgba(8, 18, 46, 0.58);
-  color: #e2e8f0;
+  gap: 24px;
+  color: #1f2937;
 }
 
 .page-hero {
-  padding: 32px 36px;
+  padding: 28px 32px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  position: relative;
-  overflow: hidden;
-}
-
-.page-hero::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at top right, rgba(82, 196, 26, 0.22), transparent 55%);
-  pointer-events: none;
+  gap: 20px;
 }
 
 .hero-main {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 32px;
-  position: relative;
-  z-index: 1;
+  gap: 28px;
 }
 
 .hero-text {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
   max-width: 560px;
 }
 
 .hero-kicker {
-  font-size: 13px;
+  font-size: 12px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(148, 163, 184, 0.75);
+  color: #5f6b7c;
 }
 
 .hero-text h1 {
   margin: 0;
   font-size: 30px;
   font-weight: 700;
-  color: #f8fafc;
+  color: #102a43;
 }
 
 .hero-text p {
   margin: 0;
   font-size: 15px;
-  color: rgba(226, 232, 240, 0.75);
+  color: #5f6b7c;
   line-height: 1.6;
 }
 
@@ -554,7 +621,7 @@ onMounted(() => {
 
 .hero-tags :deep(.ant-tag) {
   border-radius: 999px;
-  padding: 4px 16px;
+  padding: 4px 14px;
   font-size: 13px;
 }
 
@@ -563,84 +630,85 @@ onMounted(() => {
 }
 
 .hero-metrics {
-  position: relative;
-  z-index: 1;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 18px;
+  gap: 16px;
 }
 
 .metric-card {
-  background: rgba(15, 23, 42, 0.65);
-  border: 1px solid rgba(148, 163, 184, 0.18);
-  border-radius: 16px;
-  padding: 18px 20px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
 .metric-card.highlight {
-  border-color: rgba(251, 191, 36, 0.32);
-  background: linear-gradient(160deg, rgba(245, 158, 11, 0.22), rgba(251, 191, 36, 0.18));
+  background: #fff7ed;
+  border-color: #fbd38d;
 }
 
 .metric-label {
   font-size: 13px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(226, 232, 240, 0.7);
+  color: #6b7280;
 }
 
 .metric-value {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
-  color: #fef9c3;
+}
+
+.metric-value.metric-multiline {
+  white-space: pre-line;
+  line-height: 1.4;
 }
 
 .content-grid {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
 }
 
 .summary-card :deep(.ant-card-body) {
-  padding: 24px;
-}
-
-.summary-card :deep(.ant-descriptions) {
-  background: transparent !important;
+  padding: 22px;
 }
 
 .summary-card :deep(.ant-descriptions-bordered .ant-descriptions-item-label),
 .summary-card :deep(.ant-descriptions-bordered .ant-descriptions-item-content) {
-  background: rgba(15, 23, 42, 0.85);
-  border-color: rgba(148, 163, 184, 0.18);
-  color: #e2e8f0;
+  background: #f8fafc;
+  border-color: #e5e9f0;
+  color: #1f2937;
 }
 
 .layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
-  gap: 24px;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  gap: 20px;
 }
 
-.calendar-card :deep(.ant-card-head) {
+.calendar-card :deep(.ant-card-head),
+.stats-card :deep(.ant-card-head) {
   background: transparent;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
-  color: #f8fafc;
+  border-bottom: 1px solid #e5e9f0;
+  color: #102a43;
+  font-size: 17px;
+  padding: 18px 22px;
 }
 
-.calendar-card :deep(.ant-card-body) {
-  padding: 24px;
+.calendar-card :deep(.ant-card-body),
+.stats-card :deep(.ant-card-body) {
+  padding: 22px;
 }
 
 .card-title {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 18px;
+  gap: 10px;
+  font-size: 17px;
   font-weight: 600;
 }
 
@@ -657,26 +725,25 @@ onMounted(() => {
 .calendar-header {
   font-weight: 600;
   text-align: center;
-  color: rgba(226, 232, 240, 0.72);
-  letter-spacing: 0.05em;
+  color: #64748b;
+  letter-spacing: 0.02em;
 }
 
 .calendar-cell {
-  background: linear-gradient(160deg, rgba(15, 23, 42, 0.82), rgba(30, 41, 59, 0.86));
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 16px;
-  padding: 14px;
-  min-height: 148px;
+  background: #ffffff;
+  border: 1px solid #e5e9f0;
+  border-radius: 12px;
+  padding: 12px;
+  min-height: 140px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.45);
 }
 
 .calendar-cell.is-today {
-  border-color: rgba(129, 140, 248, 0.6);
-  box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.25);
+  border-color: #1d4ed8;
+  box-shadow: 0 0 0 2px rgba(29, 78, 216, 0.15);
 }
 
 .calendar-cell.is-other-month {
@@ -690,12 +757,12 @@ onMounted(() => {
 }
 
 .cell-date {
-  font-weight: 700;
-  color: #f8fafc;
+  font-weight: 600;
+  color: #1f2937;
 }
 
 .cell-date.weekend {
-  color: #fca5a5;
+  color: #e11d48;
 }
 
 .cell-classes {
@@ -710,9 +777,9 @@ onMounted(() => {
   align-items: center;
   width: 100%;
   border-radius: 12px;
-  background: rgba(59, 130, 246, 0.22);
-  border: 1px solid rgba(59, 130, 246, 0.32);
-  color: #e0f2fe;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  color: #312e81;
 }
 
 .class-tag-text {
@@ -727,46 +794,35 @@ onMounted(() => {
 
 .cell-empty {
   text-align: center;
-  color: rgba(148, 163, 184, 0.6);
-  margin-top: 16px;
+  color: #94a3b8;
+  margin-top: 12px;
 }
 
 .side-panels {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-}
-
-.stats-card :deep(.ant-card-head) {
-  background: transparent;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
-  color: #f8fafc;
-}
-
-.stats-card :deep(.ant-card-body) {
-  padding: 20px 24px;
+  gap: 20px;
 }
 
 .stats-card :deep(.ant-table) {
   background: transparent;
-  color: #e2e8f0;
+  color: #1f2937;
 }
 
 .stats-card :deep(.ant-table-thead > tr > th) {
-  background: rgba(15, 23, 42, 0.92) !important;
-  color: rgba(226, 232, 240, 0.82);
-  border-color: rgba(148, 163, 184, 0.18);
+  background: #f1f5f9 !important;
+  border-color: #e2e8f0;
+  color: #475569;
 }
 
 .stats-card :deep(.ant-table-tbody > tr > td) {
-  background: rgba(15, 23, 42, 0.65);
-  border-color: rgba(148, 163, 184, 0.12);
-  color: #e2e8f0;
+  background: #ffffff;
+  border-color: #e5e9f0;
 }
 
 .invoice-preview {
   padding: 16px;
-  background: #f3f4f6;
+  background: #f5f7fa;
   border-radius: 12px;
   max-height: 70vh;
   overflow: auto;
@@ -778,67 +834,94 @@ onMounted(() => {
   margin: 0 auto;
   background: #ffffff;
   border-radius: 12px;
-  padding: 48px 56px;
+  padding: 0 56px 48px;
   box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
   color: #111827;
   font-family: 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   position: relative;
 }
 
-.invoice-header {
+.invoice-green-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 16px;
+  align-items: center;
+  background: #1d9a6c;
+  padding: 24px 32px;
+  border-radius: 12px 12px 0 0;
+  color: #ffffff;
+  margin: 0 -56px 24px;
 }
 
-.invoice-header h2 {
-  margin: 0;
+.invoice-header-left {
+  flex: 1;
+  text-align: left;
+}
+
+.invoice-header-right {
+  flex: 1;
+  text-align: right;
+}
+
+.invoice-logo {
+  height: 48px;
+  width: auto;
+}
+
+.invoice-title {
   font-size: 22px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
-.invoice-header p {
-  margin: 4px 0 0;
-  color: #6b7280;
+.invoice-subtitle {
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+.invoice-actions {
+  margin-top: 24px;
+  text-align: right;
 }
 
 .invoice-meta {
-  font-size: 12px;
-  color: #4b5563;
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.invoice-meta span {
-  display: inline-block;
-  min-width: 90px;
-  font-weight: 600;
-  color: #111827;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #475569;
+  margin-top: 12px;
 }
 
 .invoice-section {
   margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e9f0;
 }
 
 .invoice-section h3 {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
-  margin-bottom: 12px;
+  color: #1f2937;
+  margin-bottom: 16px;
 }
 
 .invoice-summary {
   margin-top: 24px;
   border-top: 1px solid #e5e7eb;
-  padding-top: 16px;
+  padding-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .summary-row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 12px;
   font-size: 14px;
+}
+
+.summary-amount {
+  text-align: right;
+  white-space: pre-line;
+  line-height: 1.4;
 }
 
 .summary-row.grand {
@@ -847,9 +930,10 @@ onMounted(() => {
   color: #1f2937;
 }
 
-.invoice-actions {
-  margin-top: 24px;
-  text-align: right;
+.summary-amount {
+  font-weight: 700;
+  font-size: 16px;
+  color: #1f2937;
 }
 
 @media (max-width: 1200px) {
@@ -864,44 +948,31 @@ onMounted(() => {
 
 @media (max-width: 960px) {
   .page-hero {
-    padding: 28px 24px;
+    padding: 24px 22px;
   }
 
   .hero-main {
     flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .hero-actions {
-    align-self: flex-start;
   }
 
   .side-panels {
     flex-direction: column;
   }
-
-  .calendar-grid {
-    gap: 10px;
-  }
-
-  .calendar-cell {
-    min-height: 120px;
-  }
 }
 
 @media (max-width: 576px) {
   .page-hero {
-    padding: 24px 18px;
+    padding: 22px 18px;
   }
 
   .summary-card :deep(.ant-card-body),
   .calendar-card :deep(.ant-card-body),
   .stats-card :deep(.ant-card-body) {
-    padding: 20px;
+    padding: 18px;
   }
 
   .layout {
-    gap: 20px;
+    gap: 18px;
   }
 }
 </style>

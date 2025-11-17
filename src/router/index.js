@@ -3,6 +3,8 @@ import { createRouter, createWebHistory } from 'vue-router';
 const SchedulePage = () => import('../pages/SchedulePage.vue');
 const SnapshotListPage = () => import('../pages/SnapshotListPage.vue');
 const SnapshotDetailPage = () => import('../pages/SnapshotDetailPage.vue');
+const EliteHomePage = () => import('../pages/EliteHomePage.vue');
+const GeometryLessonPage = () => import('../pages/GeometryLessonPage.vue');
 
 const router = createRouter({
   history: createWebHistory(),
@@ -29,6 +31,22 @@ const router = createRouter({
       component: SnapshotDetailPage,
       meta: {
         title: '课表快照详情',
+      },
+    },
+    {
+      path: '/elite',
+      name: 'elite-home',
+      component: EliteHomePage,
+      meta: {
+        title: 'Elite Edu 公司主页',
+      },
+    },
+    {
+      path: '/geometry-lesson',
+      name: 'geometry-lesson',
+      component: GeometryLessonPage,
+      meta: {
+        title: '几何公式课堂',
       },
     },
   ],

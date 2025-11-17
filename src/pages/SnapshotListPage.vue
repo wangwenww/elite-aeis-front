@@ -1,6 +1,6 @@
 <template>
   <div class="snapshot-list-page">
-    <section class="page-hero glass-card">
+    <section class="page-hero surface-card">
       <div class="hero-text">
         <span class="hero-kicker">ELITE EDU / SNAPSHOT CENTER</span>
         <h1>课表快照管理</h1>
@@ -13,14 +13,23 @@
       </div>
       <div class="hero-actions">
         <a-space>
-          <a-button type="primary" size="large" ghost @click="goToSchedule">返回课表制定</a-button>
+          <a-button
+            type="primary"
+            size="large"
+            :disabled="mergeDisabled"
+            @click="goToMerge"
+          >
+            合并查看
+            <span v-if="selectedCount">（已选 {{ selectedCount }} 条）</span>
+          </a-button>
           <a-button size="large" @click="loadSnapshots" :loading="loading">刷新列表</a-button>
+          <a-button type="primary" size="large" ghost @click="goToSchedule">返回课表制定</a-button>
         </a-space>
       </div>
     </section>
 
     <section class="content-sections">
-      <a-card class="glass-card filter-card" :bordered="false">
+      <a-card class="surface-card filter-card" :bordered="false">
         <a-form layout="inline" :model="filters" class="filter-form">
           <a-form-item label="学生">
             <a-select
@@ -49,17 +58,31 @@
         </a-form>
       </a-card>
 
-      <a-card class="glass-card data-card" :bordered="false">
+      <selected-snapshots-bar
+        v-if="selectedSnapshots.length"
+        :items="selectedSnapshots"
+        @remove="removeSelectedSnapshot"
+        @clear="clearSelectedSnapshots"
+      />
+
+      <a-card class="surface-card data-card" :bordered="false">
         <a-table
           :data-source="snapshots"
           :columns="columns"
           :loading="loading"
           :pagination="false"
-          row-key="record => record.id"
+          :row-key="(record) => record.id"
+          :row-selection="rowSelection"
         >
           <template #bodyCell="{ column, record, text }">
-            <template v-if="column.key === 'course_total' || column.key === 'extra_total' || column.key === 'total_cost'">
-              ¥{{ formatCurrency(text) }}
+            <template v-if="column.key === 'course_total'">
+              {{ formatCurrencyTotals(record.course_totals) }}
+            </template>
+            <template v-else-if="column.key === 'extra_total'">
+              {{ formatCurrencyTotals(record.extra_totals) }}
+            </template>
+            <template v-else-if="column.key === 'total_cost'">
+              {{ formatCurrencyTotals(record.grand_totals) }}
             </template>
             <template v-else-if="column.key === 'created_at'">
               {{ formatDate(text) }}
@@ -108,6 +131,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import { useRouter } from 'vue-router';
 import { message, Modal } from 'ant-design-vue';
 import http from '../api/http';
+import SelectedSnapshotsBar from '../components/snapshot/SelectedSnapshotsBar.vue';
 
 const router = useRouter();
 
@@ -116,6 +140,8 @@ dayjs.extend(relativeTime);
 const studentOptions = ref([]);
 const snapshots = ref([]);
 const loading = ref(false);
+const selectedRowKeys = ref([]);
+const selectedSnapshotsMap = reactive(new Map());
 
 const filters = reactive({
   studentId: undefined,
@@ -131,16 +157,34 @@ const pagination = reactive({
 const columns = [
   { title: '学生', dataIndex: 'student_name', key: 'student_name' },
   { title: '月份', dataIndex: 'year_month', key: 'year_month' },
-  { title: '课程费用', dataIndex: 'course_total', key: 'course_total' },
-  { title: '额外费用', dataIndex: 'extra_total', key: 'extra_total' },
-  { title: '总费用', dataIndex: 'total_cost', key: 'total_cost' },
+  { title: '课程费用', key: 'course_total' },
+  { title: '额外费用', key: 'extra_total' },
+  { title: '总费用', key: 'total_cost' },
   { title: '创建时间', dataIndex: 'created_at', key: 'created_at' },
   { title: '操作', key: 'actions' },
 ];
 
-function formatCurrency(value) {
-  if (!value) return '0.00';
-  return Number(value).toFixed(2);
+function formatCurrencyAmount(amount) {
+  if (!amount) return '0.00';
+  return Number(amount).toFixed(2);
+}
+
+function formatCurrencySymbol(currency) {
+  const symbols = {
+    CNY: '¥',
+    SGD: 'S$',
+    USD: '$',
+  };
+  return symbols[currency] || currency;
+}
+
+function formatCurrencyTotals(totals) {
+  if (!totals || !Array.isArray(totals) || totals.length === 0) {
+    return '¥0.00';
+  }
+  return totals
+    .map((item) => `${formatCurrencySymbol(item.currency)}${formatCurrencyAmount(item.amount)}`)
+    .join(' / ');
 }
 
 function formatDate(value) {
@@ -161,6 +205,77 @@ const metrics = computed(() => {
     latestCreated: latest ? dayjs(latest).fromNow() : '',
   };
 });
+
+const selectedSnapshots = computed(() => {
+  return Array.from(selectedSnapshotsMap.values()).sort((a, b) => {
+    const timeA = dayjs(a.created_at).valueOf();
+    const timeB = dayjs(b.created_at).valueOf();
+    return timeB - timeA;
+  });
+});
+
+const selectedCount = computed(() => selectedRowKeys.value.length);
+
+const mergeDisabled = computed(() => selectedCount.value === 0);
+
+const rowSelection = computed(() => ({
+  selectedRowKeys: selectedRowKeys.value,
+  preserveSelectedRowKeys: true,
+  onChange: handleSelectionChange,
+}));
+
+function extractSnapshotBrief(item) {
+  return {
+    id: item.id,
+    student_name: item.student_name,
+    year_month: item.year_month,
+    created_at: item.created_at,
+  };
+}
+
+function synchronizeSelection(keys) {
+  const normalizedKeys = keys.map((key) => (typeof key === 'number' ? key : Number(key)));
+  const keySet = new Set(normalizedKeys);
+
+  // 移除未选中的快照
+  Array.from(selectedSnapshotsMap.keys()).forEach((id) => {
+    if (!keySet.has(id)) {
+      selectedSnapshotsMap.delete(id);
+    }
+  });
+
+  // 将当前页中已选的快照写入缓存
+  snapshots.value.forEach((item) => {
+    if (keySet.has(item.id)) {
+      selectedSnapshotsMap.set(item.id, extractSnapshotBrief(item));
+    }
+  });
+
+  selectedRowKeys.value = normalizedKeys;
+}
+
+function handleSelectionChange(keys) {
+  synchronizeSelection(keys);
+}
+
+function removeSelectedSnapshot(id) {
+  selectedSnapshotsMap.delete(id);
+  selectedRowKeys.value = selectedRowKeys.value.filter((key) => key !== id);
+}
+
+function clearSelectedSnapshots() {
+  selectedSnapshotsMap.clear();
+  selectedRowKeys.value = [];
+}
+
+function goToMerge() {
+  if (!selectedRowKeys.value.length) {
+    message.warning('请先选择需要合并的快照');
+    return;
+  }
+  const ids = selectedRowKeys.value.join(',');
+  router.push({ name: 'snapshot-merge', query: { ids } });
+}
 
 async function loadStudents() {
   try {
@@ -186,6 +301,14 @@ async function loadSnapshots() {
       ...item,
     }));
     pagination.total = data.total || 0;
+
+    // 刷新缓存中的快照信息
+    const currentKeySet = new Set(selectedRowKeys.value);
+    snapshots.value.forEach((item) => {
+      if (currentKeySet.has(item.id)) {
+        selectedSnapshotsMap.set(item.id, extractSnapshotBrief(item));
+      }
+    });
   } catch (error) {
     message.error(`加载快照失败：${error.message}`);
   } finally {
@@ -248,63 +371,43 @@ onMounted(async () => {
 .snapshot-list-page {
   display: flex;
   flex-direction: column;
-  gap: 28px;
-  color: #e2e8f0;
-}
-
-.glass-card {
-  background: linear-gradient(150deg, rgba(15, 23, 42, 0.78), rgba(17, 24, 39, 0.86));
-  border: 1px solid rgba(148, 163, 184, 0.14);
-  border-radius: 20px;
-  box-shadow: 0 24px 60px rgba(8, 18, 46, 0.55);
-  color: #e2e8f0;
+  gap: 24px;
+  color: #1f2937;
 }
 
 .page-hero {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 32px 36px;
+  padding: 28px 32px;
   gap: 32px;
-  position: relative;
-  overflow: hidden;
-}
-
-.page-hero::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at top right, rgba(82, 196, 26, 0.28), transparent 55%);
-  pointer-events: none;
 }
 
 .hero-text {
-  position: relative;
-  z-index: 1;
   max-width: 560px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
 .hero-kicker {
-  font-size: 13px;
-  letter-spacing: 0.2em;
+  font-size: 12px;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(148, 163, 184, 0.75);
+  color: #5f6b7c;
 }
 
 .hero-text h1 {
   margin: 0;
   font-size: 30px;
   font-weight: 700;
-  color: #f8fafc;
+  color: #102a43;
 }
 
 .hero-text p {
   margin: 0;
   font-size: 15px;
-  color: rgba(226, 232, 240, 0.75);
+  color: #5f6b7c;
 }
 
 .hero-tags {
@@ -315,13 +418,11 @@ onMounted(async () => {
 
 .hero-tags :deep(.ant-tag) {
   border-radius: 999px;
-  padding: 4px 16px;
+  padding: 4px 14px;
   font-size: 13px;
 }
 
 .hero-actions {
-  position: relative;
-  z-index: 1;
   display: flex;
   align-items: flex-end;
 }
@@ -329,7 +430,7 @@ onMounted(async () => {
 .content-sections {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
 }
 
 .filter-form {
@@ -345,7 +446,7 @@ onMounted(async () => {
 
 .filter-card :deep(.ant-card-body),
 .data-card :deep(.ant-card-body) {
-  padding: 24px 28px;
+  padding: 22px 26px;
 }
 
 .data-card :deep(.ant-table) {
@@ -353,20 +454,20 @@ onMounted(async () => {
 }
 
 .data-card :deep(.ant-table-thead > tr > th) {
-  background: rgba(15, 23, 42, 0.9) !important;
-  color: rgba(226, 232, 240, 0.8);
-  border-color: rgba(148, 163, 184, 0.18);
+  background: #f1f5f9 !important;
+  color: #475569;
+  border-color: #e2e8f0;
   font-weight: 600;
 }
 
 .data-card :deep(.ant-table-tbody > tr > td) {
-  background: rgba(15, 23, 42, 0.65);
-  border-color: rgba(148, 163, 184, 0.12);
-  color: #e2e8f0;
+  background: #ffffff;
+  border-color: #e5e9f0;
+  color: #1f2937;
 }
 
 .data-card :deep(.ant-table-row:hover > td) {
-  background: rgba(51, 65, 85, 0.55) !important;
+  background: #f8fafc !important;
 }
 
 .data-card :deep(.ant-table-pagination) {
@@ -380,22 +481,22 @@ onMounted(async () => {
 }
 
 .empty-block {
-  padding: 48px 0;
+  padding: 44px 0;
 }
 
 .empty-block :deep(.ant-empty-description) {
-  color: rgba(226, 232, 240, 0.7);
+  color: #6b7280;
 }
 
 @media (max-width: 960px) {
   .snapshot-list-page {
-    gap: 24px;
+    gap: 20px;
   }
 
   .page-hero {
     flex-direction: column;
     align-items: flex-start;
-    padding: 28px 24px;
+    padding: 24px 24px;
   }
 
   .hero-actions {
@@ -411,12 +512,12 @@ onMounted(async () => {
 
 @media (max-width: 576px) {
   .page-hero {
-    padding: 24px 18px;
+    padding: 22px 18px;
   }
 
   .filter-card :deep(.ant-card-body),
   .data-card :deep(.ant-card-body) {
-    padding: 20px;
+    padding: 18px;
   }
 
   .filter-select {

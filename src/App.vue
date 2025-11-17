@@ -19,9 +19,13 @@ dayjs.locale('zh-cn');
 
 const theme = {
   token: {
-    colorPrimary: '#52c41a',
-    colorLink: '#52c41a',
-    colorSuccess: '#52c41a',
+    colorPrimary: '#1d4ed8',
+    colorLink: '#1d4ed8',
+    colorSuccess: '#16a34a',
+    colorBgLayout: '#f5f7fa',
+    colorBgContainer: '#ffffff',
+    colorTextBase: '#0f172a',
+    borderRadius: 8,
   },
 };
 
@@ -31,18 +35,23 @@ const locale = zhCN;
 <style scoped>
 .app-shell {
   min-height: 100vh;
-  background: linear-gradient(180deg, #0f172a 0%, #0b1120 20%, #111827 60%, #15253b 100%);
-  color: #0b1120;
+  padding: 0 40px 48px;
+  background: #f5f7fa;
 }
 
 .app-main {
-  padding: 32px 24px 48px;
-  min-height: calc(100vh - 120px);
+  padding-top: 24px;
+  min-height: calc(100vh - 112px);
 }
 
 @media (max-width: 960px) {
   .app-main {
-    padding: 24px 16px;
+    padding-top: 16px;
+  }
+
+  .app-shell {
+    padding: 0 16px 32px;
+    background: #f5f7fa;
   }
 }
 </style>

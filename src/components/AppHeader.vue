@@ -18,10 +18,15 @@
           trigger-sub-menu-action="click"
           @click="handleMenuClick"
         >
+          <a-menu-item key="elite-home">公司首页</a-menu-item>
           <a-sub-menu key="schedule-menu">
             <template #title>课表管理</template>
             <a-menu-item key="schedule">课表制定</a-menu-item>
             <a-menu-item key="snapshot-list">快照管理</a-menu-item>
+          </a-sub-menu>
+          <a-sub-menu key="learning-menu">
+            <template #title>学习资源</template>
+            <a-menu-item key="geometry-lesson">几何公式课堂</a-menu-item>
           </a-sub-menu>
         </a-menu>
       </nav>
@@ -42,28 +47,35 @@ import { useRoute, useRouter } from 'vue-router';
 const router = useRouter();
 const route = useRoute();
 
-const logoUrl = new URL('../assets/logo-placeholder.svg', import.meta.url).href;
+const logoUrl = new URL('../assets/elite-logo.png', import.meta.url).href;
 
 const routeKeyMap = {
+  'elite-home': 'elite-home',
   schedule: 'schedule',
   'snapshot-list': 'snapshot-list',
   'snapshot-detail': 'snapshot-list',
+  'geometry-lesson': 'geometry-lesson',
 };
 
 const selectedKeys = computed(() => {
   const name = route.name;
-  const mapped = routeKeyMap[name] || 'schedule';
-  return [mapped];
+  const mapped = routeKeyMap[name] || null;
+  return mapped ? [mapped] : [];
 });
 
 function handleMenuClick({ key }) {
   if (!key) return;
-  const target = key === 'schedule' ? { name: 'schedule' } : { name: key };
-  router.push(target).catch(() => {});
+  if (key === 'elite-home') {
+    router.push({ name: 'elite-home' }).catch(() => {});
+  } else if (key === 'schedule') {
+    router.push({ name: 'schedule' }).catch(() => {});
+  } else {
+    router.push({ name: key }).catch(() => {});
+  }
 }
 
 function goHome() {
-  router.push({ name: 'schedule' }).catch(() => {});
+  router.push({ name: 'elite-home' }).catch(() => {});
 }
 </script>
 
@@ -72,9 +84,9 @@ function goHome() {
   position: sticky;
   top: 0;
   z-index: 100;
-  backdrop-filter: blur(12px);
-  background: linear-gradient(120deg, rgba(18, 38, 32, 0.92), rgba(25, 50, 28, 0.88));
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.18);
+  background: #ffffff;
+  border-bottom: 1px solid #e5e9f0;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.1);
 }
 
 .banner-inner {
@@ -83,37 +95,40 @@ function goHome() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 32px;
+  padding: 14px 32px;
   gap: 24px;
 }
 
 .brand-block {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   cursor: pointer;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  padding: 6px 10px;
+  border-radius: 12px;
 }
 
 .brand-block:hover {
   transform: translateY(-1px);
-  opacity: 0.95;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.1);
+  background: rgba(226, 232, 240, 0.45);
 }
 
 .logo-wrap {
-  width: 56px;
-  height: 56px;
-  border-radius: 18px;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.12);
+  background: #eff4fb;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.08);
+  border: 1px solid #d8e1ee;
 }
 
 .brand-logo {
-  width: 48px;
+  width: 42px;
   height: auto;
   display: block;
 }
@@ -121,19 +136,19 @@ function goHome() {
 .brand-text {
   display: flex;
   flex-direction: column;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .brand-name {
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 700;
-  color: #ffffff;
-  letter-spacing: 0.02em;
+  color: #14213d;
+  letter-spacing: 0.015em;
 }
 
 .brand-sub {
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.72);
+  color: #4f6274;
 }
 
 .nav-block {
@@ -149,7 +164,7 @@ function goHome() {
 
 .nav-block :deep(.ant-menu-item),
 .nav-block :deep(.ant-menu-submenu-title) {
-  color: rgba(255, 255, 255, 0.86);
+  color: #1f2a37;
   font-size: 15px;
   font-weight: 500;
   padding: 0 18px;
@@ -157,16 +172,16 @@ function goHome() {
 
 .nav-block :deep(.ant-menu-horizontal > .ant-menu-item::after),
 .nav-block :deep(.ant-menu-horizontal > .ant-menu-submenu::after) {
-  border-bottom: 2px solid rgba(255, 255, 255, 0.85);
+  border-bottom: 2px solid rgba(29, 78, 216, 0.6);
   border-radius: 2px;
 }
 
 .nav-block :deep(.ant-menu-item-selected) {
-  color: #52c41a;
+  color: #1d4ed8;
 }
 
 .nav-block :deep(.ant-menu-item-selected::after) {
-  border-bottom-color: #52c41a;
+  border-bottom-color: #1d4ed8;
 }
 
 .extra-block {
@@ -176,9 +191,9 @@ function goHome() {
 }
 
 .extra-block :deep(.ant-tag) {
-  background: rgba(82, 196, 26, 0.18);
+  background: rgba(29, 78, 216, 0.12);
   border: none;
-  color: #bbf7d0;
+  color: #1d4ed8;
   font-weight: 600;
 }
 
@@ -186,7 +201,7 @@ function goHome() {
   .banner-inner {
     flex-direction: column;
     align-items: flex-start;
-    padding: 16px 20px;
+    padding: 14px 20px;
     gap: 18px;
   }
 

@@ -4,8 +4,10 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 45654",
+    "dev": "VITE_RUNTIME_ENV=local vite --port 45654",
+    "dev:ngrok": "VITE_RUNTIME_ENV=ngrok vite --port 45654",
     "build": "vite build",
+    "build:ngrok": "VITE_RUNTIME_ENV=ngrok vite build",
     "preview": "vite preview --port 45654"
   },
   "dependencies": {

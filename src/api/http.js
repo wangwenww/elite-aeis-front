@@ -1,7 +1,10 @@
 import axios from 'axios';
+import { getRuntimeConfig } from '../config/runtimeConfig';
+
+const { apiBaseUrl } = getRuntimeConfig();
 
 const http = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || apiBaseUrl || '/api',
   timeout: 15000,
 });
 

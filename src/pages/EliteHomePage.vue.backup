@@ -1,0 +1,589 @@
+<template>
+  <div class="elite-home">
+    <!-- 顶部品牌区 -->
+    <section class="hero">
+      <div class="hero-background">
+        <div class="hero-particles"></div>
+        <div class="hero-gradient"></div>
+      </div>
+      <div class="hero-content">
+        <div class="hero-left">
+          <div class="brand-section">
+            <div class="logo-container">
+              <img :src="logoUrl" alt="Elite Edu Logo" class="hero-logo" />
+              <div class="logo-glow"></div>
+            </div>
+            <div class="brand-text">
+              <h1 class="hero-title">
+                <span class="title-main">新加坡壹立教育</span>
+                <span class="title-sub">Elite Education Center</span>
+              </h1>
+              <p class="hero-subtitle">
+                <span class="subtitle-item">🎯 国际化视野</span>
+                <span class="subtitle-divider">•</span>
+                <span class="subtitle-item">📚 专业稳重</span>
+                <span class="subtitle-divider">•</span>
+                <span class="subtitle-item">🏆 结果导向</span>
+              </p>
+            </div>
+          </div>
+          <div class="hero-actions">
+            <a-button type="primary" size="large" class="action-btn primary" @click="scrollTo('contact')">
+              <span class="btn-icon">📅</span>
+              预约咨询
+            </a-button>
+            <a-button size="large" class="action-btn secondary" @click="scrollTo('courses')">
+              <span class="btn-icon">🎓</span>
+              了解课程
+            </a-button>
+          </div>
+          <div class="hero-stats">
+            <div class="stat-item">
+              <div class="stat-number">95%</div>
+              <div class="stat-label">录取率</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">500+</div>
+              <div class="stat-label">成功案例</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">10+</div>
+              <div class="stat-label">资深教师</div>
+            </div>
+          </div>
+        </div>
+        <div class="hero-right">
+          <a-card :bordered="false" class="hero-form-card">
+            <template #title>
+              <div class="form-title">
+                <span class="form-icon">✨</span>
+                快速预约咨询
+              </div>
+            </template>
+            <a-form layout="vertical" class="consultation-form">
+              <a-form-item label="学生姓名">
+                <a-input v-model:value="form.name" placeholder="请输入学生姓名" size="large" />
+              </a-form-item>
+              <a-form-item label="联系方式">
+                <a-input v-model:value="form.phone" placeholder="手机/微信/Email" size="large" />
+              </a-form-item>
+              <a-form-item label="意向课程">
+                <a-select v-model:value="form.intent" :options="courseOptions" placeholder="请选择课程类型" size="large" />
+              </a-form-item>
+              <a-button type="primary" block size="large" class="submit-btn" :loading="submitting" @click="submitForm">
+                <span class="btn-text">立即预约</span>
+              </a-button>
+            </a-form>
+          </a-card>
+        </div>
+      </div>
+    </section>
+
+    <!-- 课程介绍 -->
+    <section id="courses" class="section courses-section">
+      <div class="section-decoration">
+        <div class="decoration-circle circle-1"></div>
+        <div class="decoration-circle circle-2"></div>
+      </div>
+      <header class="section-header">
+        <div class="header-badge">
+          <span class="badge-icon">🎓</span>
+          <span class="badge-text">核心课程</span>
+        </div>
+        <h2 class="section-title">精英课程体系</h2>
+        <p class="section-subtitle">覆盖 AEIS 备考 / 新加坡小学衔接 / 特色提升等多条路径，为每个学生定制最适合的学习方案</p>
+      </header>
+      <div class="courses-grid">
+        <div class="course-card" v-for="(item, index) in courseCards" :key="item.key" :class="`card-${index + 1}`">
+          <div class="card-header">
+            <div class="card-icon">{{ getCourseIcon(item.key) }}</div>
+            <a-tag :color="getCourseColor(item.key)" class="level-tag">{{ item.level }}</a-tag>
+          </div>
+          <h3 class="card-title">{{ item.title }}</h3>
+          <p class="card-desc">{{ item.desc }}</p>
+          <div class="card-features">
+            <div class="feature-item" v-for="feature in getCourseFeatures(item.key)" :key="feature">
+              <span class="feature-icon">✓</span>
+              <span class="feature-text">{{ feature }}</span>
+            </div>
+          </div>
+          <a-button type="link" class="card-action" @click="scrollTo('contact')">
+            咨询详情
+            <span class="action-arrow">→</span>
+          </a-button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 教学特色 -->
+    <section class="section features-section">
+      <header class="section-header">
+        <div class="header-badge">
+          <span class="badge-icon">⭐</span>
+          <span class="badge-text">教学优势</span>
+        </div>
+        <h2 class="section-title">为什么选择 Elite Edu</h2>
+        <p class="section-subtitle">以结果为导向的个性化教学方案，配合数据化评测，让学习更高效、更精准</p>
+      </header>
+      <div class="features-grid">
+        <div class="feature-card" v-for="(f, index) in features" :key="f.title" :class="`feature-${index + 1}`">
+          <div class="feature-icon-wrapper">
+            <div class="feature-icon">{{ f.icon }}</div>
+            <div class="icon-glow"></div>
+          </div>
+          <h3 class="feature-title">{{ f.title }}</h3>
+          <p class="feature-desc">{{ f.desc }}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 师资力量 -->
+    <section class="section teachers-section">
+      <header class="section-header">
+        <div class="header-badge">
+          <span class="badge-icon">👥</span>
+          <span class="badge-text">师资团队</span>
+        </div>
+        <h2 class="section-title">资深教师团队</h2>
+        <p class="section-subtitle">严选具备国际教学经验与优秀成果的教师团队，为学生的学习保驾护航</p>
+      </header>
+      <div class="teachers-grid">
+        <div class="teacher-card" v-for="(t, index) in teachers" :key="t.name" :class="`teacher-${index + 1}`">
+          <div class="teacher-avatar">
+            <div class="avatar-content">{{ t.initials }}</div>
+            <div class="avatar-ring"></div>
+          </div>
+          <div class="teacher-info">
+            <h3 class="teacher-name">{{ t.name }}</h3>
+            <p class="teacher-title">{{ t.title }}</p>
+            <p class="teacher-bio">{{ t.bio }}</p>
+            <div class="teacher-stats">
+              <span class="stat-badge">经验丰富</span>
+              <span class="stat-badge">专业认证</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 学生成果 -->
+    <section class="section results-section">
+      <header class="section-header">
+        <div class="header-badge">
+          <span class="badge-icon">🏆</span>
+          <span class="badge-text">成功案例</span>
+        </div>
+        <h2 class="section-title">学生成功故事</h2>
+        <p class="section-subtitle">用事实说话，见证每一位学生的成长与录取时刻</p>
+      </header>
+      <div class="results-grid">
+        <div class="result-card" v-for="(c, index) in cases" :key="c.name" :class="`result-${index + 1}`">
+          <div class="result-header">
+            <div class="student-avatar">{{ getInitials(c.name) }}</div>
+            <div class="success-badge">
+              <span class="badge-icon">✓</span>
+              成功录取
+            </div>
+          </div>
+          <h3 class="student-name">{{ c.name }}</h3>
+          <p class="student-track">{{ c.track }}</p>
+          <p class="student-result">{{ c.result }}</p>
+          <div class="result-metrics">
+            <div class="metric-item">
+              <span class="metric-value">A+</span>
+              <span class="metric-label">成绩提升</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-value">100%</span>
+              <span class="metric-label">通过率</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 师资力量 -->
+    <section class="section teachers-section">
+      <header class="section-header">
+        <div class="header-badge">
+          <span class="badge-icon">👥</span>
+          <span class="badge-text">师资团队</span>
+        </div>
+        <h2 class="section-title">资深教师团队</h2>
+        <p class="section-subtitle">严选具备国际教学经验与优秀成果的教师团队，为学生的学习保驾护航</p>
+      </header>
+      <div class="teachers-grid">
+        <div class="teacher-card" v-for="(t, index) in teachers" :key="t.name" :class="`teacher-${index + 1}`">
+          <div class="teacher-avatar">
+            <div class="avatar-content">{{ t.initials }}</div>
+            <div class="avatar-ring"></div>
+          </div>
+          <div class="teacher-info">
+            <h3 class="teacher-name">{{ t.name }}</h3>
+            <p class="teacher-title">{{ t.title }}</p>
+            <p class="teacher-bio">{{ t.bio }}</p>
+            <div class="teacher-stats">
+              <span class="stat-badge">经验丰富</span>
+              <span class="stat-badge">专业认证</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+        <!-- 关于我们 -->
+    <section class="section about-section">
+      <header class="section-header">
+        <div class="header-badge">
+          <span class="badge-icon">🏫</span>
+          <span class="badge-text">品牌故事</span>
+        </div>
+        <h2 class="section-title">关于 Elite Edu</h2>
+        <p class="section-subtitle">源自对教育品质的极致追求，培养具有国际竞争力的精英人才</p>
+      </header>
+      <div class="about-content">
+        <div class="about-card">
+          <div class="about-icon">
+            <span class="icon-emoji">🎯</span>
+          </div>
+          <div class="about-text">
+            <h3>我们的理念</h3>
+            <p>Elite Edu 秉持"学术为本、结果导向、人格并重"的教育理念，在新加坡深耕本地与国际教育，整合优质教师资源与评测工具，为不同阶段的学生提供定制化学习方案。</p>
+          </div>
+        </div>
+        <div class="about-values">
+          <div class="value-item">
+            <span class="value-icon">📚</span>
+            <div class="value-content">
+              <h4>学术为本</h4>
+              <p>严谨的教学体系</p>
+            </div>
+          </div>
+          <div class="value-item">
+            <span class="value-icon">🏆</span>
+            <div class="value-content">
+              <h4>结果导向</h4>
+              <p>可衡量的进步</p>
+            </div>
+          </div>
+          <div class="value-item">
+            <span class="value-icon">🌟</span>
+            <div class="value-content">
+              <h4>人格并重</h4>
+              <p>全人教育培养</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+        <!-- 联系与预约 -->
+        <section id="contact" class="section alt">
+          <header class="section-header">
+            <h2>联系我们</h2>
+            <p>欢迎留下需求，我们将尽快与您联系</p>
+          </header>
+          <a-row :gutter="[16, 16]">
+            <a-col :xs="24" :md="14">
+              <a-card :bordered="false">
+                <a-form layout="vertical">
+                  <a-form-item label="姓名">
+                    <a-input v-model:value="form2.name" placeholder="您的姓名" />
+                  </a-form-item>
+                  <a-form-item label="联系方式">
+                    <a-input v-model:value="form2.contact" placeholder="手机/微信/Email" />
+                  </a-form-item>
+                  <a-form-item label="留言">
+                    <a-textarea v-model:value="form2.message" :rows="4" placeholder="您的需求/问题" />
+                  </a-form-item>
+                  <a-space>
+                    <a-button @click="resetContact">重置</a-button>
+                    <a-button type="primary" :loading="submitting2" @click="submitContact">提交</a-button>
+                  </a-space>
+                </a-form>
+              </a-card>
+            </a-col>
+            <a-col :xs="24" :md="10">
+              <a-card :bordered="false">
+                <p><strong>地址：</strong>Singapore · Central Area</p>
+                <p><strong>邮箱：</strong>contact@elite-edu.sg</p>
+                <p><strong>电话：</strong>+65-0000-0000</p>
+              </a-card>
+            </a-col>
+          </a-row>
+        </section>
+      </div>
+      </template>
+        <h2>联系我们</h2>
+        <p>欢迎留下需求，我们将尽快与您联系</p>
+      </header>
+      <a-row :gutter="[16, 16]">
+        <a-col :xs="24" :md="14">
+          <a-card :bordered="false">
+            <a-form layout="vertical">
+              <a-form-item label="姓名">
+                <a-input v-model:value="form2.name" placeholder="您的姓名" />
+              </a-form-item>
+              <a-form-item label="联系方式">
+                <a-input v-model:value="form2.contact" placeholder="手机/微信/Email" />
+              </a-form-item>
+              <a-form-item label="留言">
+                <a-textarea v-model:value="form2.message" :rows="4" placeholder="您的需求/问题" />
+              </a-form-item>
+              <a-space>
+                <a-button @click="resetContact">重置</a-button>
+                <a-button type="primary" :loading="submitting2" @click="submitContact">提交</a-button>
+              </a-space>
+            </a-form>
+          </a-card>
+        </a-col>
+        <a-col :xs="24" :md="10">
+          <a-card :bordered="false">
+            <p><strong>地址：</strong>Singapore · Central Area</p>
+            <p><strong>邮箱：</strong>contact@elite-edu.sg</p>
+            <p><strong>电话：</strong>+65-0000-0000</p>
+          </a-card>
+        </a-col>
+      </a-row>
+    </section>
+  </div>
+  </template>
+
+<script setup>
+import { reactive, ref } from 'vue';
+import { message } from 'ant-design-vue';
+import http from '../api/http';
+
+const logoUrl = new URL('../assets/elite-logo.png', import.meta.url).href;
+
+const form = reactive({ name: '', phone: '', intent: undefined });
+const form2 = reactive({ name: '', contact: '', message: '' });
+const submitting = ref(false);
+const submitting2 = ref(false);
+
+const courseOptions = [
+  { label: 'AEIS 备考', value: 'aeis' },
+  { label: '小学衔接', value: 'primary' },
+  { label: '特色提升', value: 'special' },
+];
+
+const courseCards = [
+  { key: 'aeis', title: 'AEIS 全周期备考', level: 'International', desc: '分层教学 + 模考评测 + 目标导向' },
+  { key: 'pri', title: '新加坡小学衔接', level: 'Primary', desc: '语言与学科学段衔接，快速适应' },
+  { key: 'adv', title: '数学/英语强化', level: 'Enhance', desc: '薄弱点诊断，定制化提升方案' },
+];
+
+const features = [
+  { icon: '📈', title: '数据化评测', desc: '过程可视化，结果量化，持续追踪学习曲线' },
+  { icon: '🧭', title: '个性化路径', desc: '基于诊断的分层/分项教学，因材施教' },
+  { icon: '🧑‍🏫', title: '小班精品', desc: '控班规模，保障互动与反馈效率' },
+  { icon: '🧠', title: '方法论沉淀', desc: '多年教研打磨，建立可迁移的学习能力' },
+  { icon: '🤝', title: '家校共育', desc: '定期汇报机制，家长随时掌握学习进度' },
+  { icon: '🌏', title: '国际视野', desc: '融合国际标准与本地课程要求' },
+];
+
+const teachers = [
+  { initials: 'JL', name: 'Jane Lee', title: 'Senior English Teacher', bio: '10+年国际课程教学经验，擅长学术写作与阅读策略。' },
+  { initials: 'MK', name: 'Michael Koh', title: 'Mathematics Lead', bio: '竞赛与升学指导双栖，建立体系化解题思维。' },
+  { initials: 'CW', name: 'Chen Wei', title: 'Primary Transition', bio: '小学衔接专项，快速适应本地课程与课堂文化。' },
+];
+
+const cases = [
+  { name: 'Dennis', track: 'AEIS Transition', result: '3 个月成绩提升显著，顺利通过 AEIS 并录取本地学校。' },
+  { name: 'MJR', track: 'Math Enhance', result: '目标化训练，期末数学 A。' },
+  { name: 'Alice', track: 'Primary Join', result: '完成语言与课程双重适应，综合评估优秀。' },
+];
+
+function scrollTo(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+async function submitForm() {
+  if (!form.name || !form.phone) {
+    message.warning('请填写姓名和联系方式');
+    return;
+  }
+  submitting.value = true;
+  try {
+    await http.post('/api/inquiries', {
+      name: form.name,
+      phone: form.phone,
+      intent: form.intent,
+      source: 'website',
+    });
+    message.success('预约提交成功！我们会尽快与您联系。');
+    form.name = '';
+    form.phone = '';
+    form.intent = undefined;
+  } catch (error) {
+    message.error(`提交失败：${error.response?.data?.detail || error.message || '未知错误'}`);
+  } finally {
+    submitting.value = false;
+  }
+}
+
+function resetContact() {
+  form2.name = '';
+  form2.contact = '';
+  form2.message = '';
+}
+
+async function submitContact() {
+  if (!form2.name || !form2.contact) {
+    message.warning('请填写姓名和联系方式');
+    return;
+  }
+  submitting2.value = true;
+  try {
+    await http.post('/api/inquiries', {
+      name: form2.name,
+      phone: form2.contact,
+      message: form2.message,
+      source: 'website',
+    });
+    message.success('感谢您的联系，我们将尽快与您取得联系。');
+    resetContact();
+  } catch (error) {
+    message.error(`提交失败：${error.response?.data?.detail || error.message || '未知错误'}`);
+  } finally {
+    submitting2.value = false;
+  }
+}
+</script>
+
+<style scoped>
+.elite-home {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  color: #1f2937;
+}
+
+.surface-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 24px;
+  padding: 32px 36px;
+}
+
+.hero-logo {
+  height: 54px;
+  margin-bottom: 8px;
+}
+.hero-title {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 800;
+  color: #102a43;
+}
+.hero-subtitle {
+  margin: 6px 0 18px;
+  color: #475569;
+  font-size: 16px;
+}
+.hero-form :deep(.ant-card-head-title) {
+  font-weight: 600;
+}
+
+.section {
+  padding: 26px 30px;
+}
+.section.alt {
+  background: #f5f7fa;
+  border-radius: 16px;
+}
+.section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.section-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
+}
+.section-header p {
+  margin: 0;
+  color: #64748b;
+}
+
+.hover-card {
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.hover-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+}
+.card-desc {
+  min-height: 48px;
+  color: #48566a;
+}
+.card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.feature-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+.feature-icon {
+  font-size: 22px;
+}
+.feature-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+.feature-desc {
+  margin: 0;
+  color: #5f6b7c;
+}
+
+.teacher {
+  display: flex;
+  gap: 14px;
+}
+.teacher .avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+.teacher .info h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+.muted {
+  color: #6b7280;
+}
+
+@media (max-width: 960px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+

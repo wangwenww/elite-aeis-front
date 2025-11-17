@@ -1,9 +1,9 @@
 :root {
-  color-scheme: dark;
+  color-scheme: light;
   font-family: 'Inter', 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
     'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
-  background-color: #0b1120;
-  color: #e2e8f0;
+  background-color: #f5f7fa;
+  color: #0f172a;
 }
 
 html,
@@ -13,10 +13,8 @@ body,
   padding: 0;
   min-height: 100%;
   width: 100%;
-  background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.18), transparent 55%),
-    radial-gradient(circle at bottom right, rgba(82, 196, 26, 0.18), transparent 60%),
-    #0b1120;
-  color: #e2e8f0;
+  background-color: #f5f7fa;
+  color: #0f172a;
 }
 
 a {
@@ -35,21 +33,29 @@ a {
 
 .app-main {
   width: 100%;
+  padding-bottom: 48px;
 }
 
-.glass-surface {
-  background: linear-gradient(145deg, rgba(15, 23, 42, 0.7), rgba(29, 40, 60, 0.58));
-  border-radius: 20px;
-  border: 1px solid rgba(148, 163, 184, 0.14);
-  box-shadow: 0 24px 60px rgba(8, 18, 46, 0.5);
-  backdrop-filter: blur(18px);
+.surface-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e5e9f0;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
 }
 
-.page-section {
+.muted-text {
+  color: #5f6b7c;
+}
+
+.accent-text {
+  color: #1d4ed8;
+}
+
+.section-spacing {
   margin-bottom: 32px;
 }
 
 ::selection {
-  background: rgba(82, 196, 26, 0.4);
-  color: #f8fafc;
+  background: rgba(45, 84, 165, 0.3);
+  color: #0f172a;
 }
