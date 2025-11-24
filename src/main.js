@@ -1,20 +1,11 @@
 import { createApp } from 'vue';
 import Antd from 'ant-design-vue';
-import PrimeVue from 'primevue/config';
-import Tooltip from 'primevue/tooltip';
-import Aura from '@primevue/themes/aura';
-import ConfirmationService from 'primevue/confirmationservice';
 import App from './App.vue';
 import router from './router';
 import 'ant-design-vue/dist/reset.css';
-import 'primeicons/primeicons.css';
-import 'primeflex/primeflex.css';
 import './styles/global.css';
 
 const app = createApp(App);
 app.use(router);
 app.use(Antd);
-app.use(PrimeVue, { theme: { preset: Aura } });
-app.use(ConfirmationService);
-app.directive('tooltip', Tooltip);
 app.mount('#app');

@@ -59,7 +59,9 @@
             </template>
           </template>
         </a-table>
-        <a-empty v-else description="该月没有额外费用记录" />
+        <div v-else class="empty-state">
+          <span class="empty-text">该月没有额外费用记录</span>
+        </div>
       </section>
 
       <section class="totals-block">
@@ -262,6 +264,19 @@ function formatDate(value) {
 .totals-value {
   white-space: pre-wrap;
   text-align: right;
+}
+
+.empty-state {
+  padding: 16px;
+  text-align: center;
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px dashed #d9d9d9;
+}
+
+.empty-text {
+  font-size: 13px;
+  color: #8c8c8c;
 }
 
 @media (max-width: 768px) {

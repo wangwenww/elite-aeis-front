@@ -173,17 +173,19 @@ function renderCell(column, record) {
 }
 
 .empty-state {
-  margin-top: 24px;
-  min-height: 180px;
+  margin-top: 16px;
+  min-height: 100px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 8px;
   color: #94a3b8;
+  padding: 20px;
 }
 
 .empty-icon {
-  font-size: 24px;
+  font-size: 20px;
+  opacity: 0.6;
 }
 </style>

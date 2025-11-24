@@ -123,16 +123,18 @@ const emit = defineEmits(['add-expense', 'edit-expense', 'delete-expense']);
 }
 
 .empty-state {
-  min-height: 140px;
+  min-height: 80px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 8px;
   color: #94a3b8;
+  padding: 16px;
 }
 
 .empty-icon {
-  font-size: 22px;
+  font-size: 20px;
+  opacity: 0.6;
 }
 </style>

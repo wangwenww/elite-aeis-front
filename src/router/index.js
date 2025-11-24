@@ -3,8 +3,10 @@ import { createRouter, createWebHistory } from 'vue-router';
 const SchedulePage = () => import('../pages/SchedulePage.vue');
 const SnapshotListPage = () => import('../pages/SnapshotListPage.vue');
 const SnapshotDetailPage = () => import('../pages/SnapshotDetailPage.vue');
+const SnapshotMergePage = () => import('../pages/SnapshotMergePage.vue');
 const EliteHomePage = () => import('../pages/EliteHomePage.vue');
 const GeometryLessonPage = () => import('../pages/GeometryLessonPage.vue');
+const WordNoteProcessPage = () => import('../pages/WordNoteProcessPage.vue');
 
 const router = createRouter({
   history: createWebHistory(),
@@ -34,6 +36,14 @@ const router = createRouter({
       },
     },
     {
+      path: '/snapshots-merge',
+      name: 'snapshot-merge',
+      component: SnapshotMergePage,
+      meta: {
+        title: '快照合并查看',
+      },
+    },
+    {
       path: '/elite',
       name: 'elite-home',
       component: EliteHomePage,
@@ -47,6 +57,14 @@ const router = createRouter({
       component: GeometryLessonPage,
       meta: {
         title: '几何公式课堂',
+      },
+    },
+    {
+      path: '/word-notes',
+      name: 'word-notes',
+      component: WordNoteProcessPage,
+      meta: {
+        title: '英语单词笔记处理',
       },
     },
   ],

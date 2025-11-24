@@ -5,7 +5,7 @@ const { apiBaseUrl } = getRuntimeConfig();
 
 const http = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || apiBaseUrl || '/api',
-  timeout: 15000,
+  // 不设置超时，允许长时间处理（大模型接口可能需要较长时间）
 });
 
 http.interceptors.response.use(

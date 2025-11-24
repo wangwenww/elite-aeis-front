@@ -5,9 +5,9 @@
         <h1>月度课时费管理系统</h1>
         <p>为 Elite Edu 学员提供精准的课表制定与费用结算体验</p>
         <div class="hero-meta">
-          <Tag severity="info" rounded>{{ formattedMonth }}</Tag>
-          <Tag v-if="currentStudentName" severity="success" rounded>学生：{{ currentStudentName }}</Tag>
-          <Tag v-else severity="warning" rounded>请选择学生</Tag>
+          <a-tag color="blue" :bordered="false">{{ formattedMonth }}</a-tag>
+          <a-tag v-if="currentStudentName" color="green" :bordered="false">学生：{{ currentStudentName }}</a-tag>
+          <a-tag v-else color="orange" :bordered="false">请选择学生</a-tag>
         </div>
       </div>
 
@@ -800,40 +800,92 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+/* CSS变量定义 */
+:root {
+  --primary-gradient: linear-gradient(135deg, #00A67C 0%, #008c69 100%);
+  --accent-gradient: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
 .schedule-page {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  color: #1f2937;
+  gap: 32px;
+  color: #1E293B;
+  background: linear-gradient(to bottom, #F8FAFC 0%, #F1F5F9 100%);
+  min-height: 100vh;
+  padding: 24px;
 }
 
+/* 页面英雄区域 */
 .page-hero {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 28px 32px;
-  gap: 32px;
+  padding: 32px 40px;
+  gap: 40px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.page-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #00A67C 0%, #6366F1 50%, #F59E0B 100%);
+}
+
+.page-hero:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
 }
 
 .hero-text {
-  max-width: 540px;
+  max-width: 600px;
+  animation: fadeInUp 0.6s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .hero-text h1 {
-  font-size: 30px;
-  margin: 0 0 10px;
+  font-size: 32px;
+  margin: 0 0 12px;
   font-weight: 700;
-  color: #102a43;
+  color: #1E293B;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .hero-text p {
   margin: 0;
   font-size: 16px;
-  color: #5f6b7c;
+  color: #64748B;
+  line-height: 1.6;
 }
 
 .hero-meta {
-  margin-top: 18px;
+  margin-top: 20px;
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
@@ -841,91 +893,131 @@ onMounted(async () => {
 
 .hero-meta :deep(.ant-tag) {
   border-radius: 999px;
-  padding: 4px 14px;
+  padding: 6px 16px;
   font-size: 13px;
+  border: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
 }
 
+.hero-meta :deep(.ant-tag):hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-sm);
+}
+
+/* 指标卡片 */
 .hero-metrics {
   display: grid;
-  grid-template-columns: repeat(3, minmax(140px, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(3, minmax(160px, 1fr));
+  gap: 20px;
 }
 
 .metric-item {
-  background: #f8fafc;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   border-radius: 12px;
-  padding: 18px 20px;
-  border: 1px solid #e2e8f0;
+  padding: 24px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #00A67C, #6366F1);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.metric-item:hover::before {
+  transform: scaleX(1);
+}
+
+.metric-item:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(0, 166, 124, 0.3);
 }
 
 .metric-label {
-  font-size: 13px;
-  letter-spacing: 0.08em;
+  font-size: 12px;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #6b7280;
+  color: #94A3B8;
+  font-weight: 600;
 }
 
 .metric-value {
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 700;
-  color: #1d3557;
+  color: #1E293B;
+  font-variant-numeric: tabular-nums;
 }
 
 .metric-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 6px 14px;
+  padding: 8px 16px;
   border-radius: 999px;
   font-size: 13px;
   font-weight: 600;
-  background: #edf2f7;
-  color: #2d3748;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  color: #475569;
+  transition: all 0.2s ease;
 }
 
 .metric-badge.dirty {
-  background: #fdece8;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
   color: #c2410c;
+  animation: pulse 2s infinite;
 }
 
 .metric-badge.clean {
-  background: #e7f6ec;
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
   color: #166534;
 }
 
-.toolbar-card :deep(.ant-card-body) {
-  padding: 18px 28px;
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
 }
 
-.toolbar-actions {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
+/* 内容网格 */
 .content-grid {
   display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 24px;
+  grid-template-columns: 340px 1fr;
+  gap: 32px;
+  align-items: start;
 }
 
 .main-panel {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 32px;
 }
 
+/* 空状态 */
 .cell-empty {
   color: #94a3b8;
   text-align: center;
-  margin-top: 12px;
+  margin-top: 16px;
+  font-size: 13px;
 }
 
+/* 响应式设计 */
 @media (max-width: 1200px) {
   .content-grid {
     grid-template-columns: 1fr;
@@ -934,64 +1026,103 @@ onMounted(async () => {
   .main-panel {
     order: 1;
   }
+
+  .hero-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
+  .schedule-page {
+    padding: 16px;
+    gap: 24px;
+  }
+
   .page-hero {
     flex-direction: column;
     align-items: flex-start;
-    padding: 24px 22px;
+    padding: 24px;
+  }
+
+  .hero-text h1 {
+    font-size: 24px;
   }
 
   .hero-metrics {
     width: 100%;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: 1fr;
   }
 }
 
+/* 对话框样式 */
 .course-modal-body {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 28px;
 }
 
 .course-table-wrapper {
-  min-height: 220px;
+  min-height: 240px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 12px;
 }
 
 .course-table-wrapper .empty-state {
-  min-height: 160px;
+  min-height: 180px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
   color: #94a3b8;
 }
 
 .course-table-wrapper .empty-state .anticon {
-  font-size: 24px;
+  font-size: 48px;
+  opacity: 0.5;
 }
 
+/* 表单样式 */
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  border: 2px dashed #e2e8f0;
 }
 
 .form-field {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .form-field label {
   font-size: 14px;
   font-weight: 600;
   color: #334155;
+  letter-spacing: 0.01em;
+}
+
+.form-field :deep(.ant-input),
+.form-field :deep(.ant-input-number),
+.form-field :deep(.ant-select-selector) {
+  border-radius: 8px;
+  border-color: #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.form-field :deep(.ant-input:focus),
+.form-field :deep(.ant-input-number-focused),
+.form-field :deep(.ant-select-focused .ant-select-selector) {
+  border-color: #00A67C;
+  box-shadow: 0 0 0 3px rgba(0, 166, 124, 0.1);
 }
 
 .form-field-full {
@@ -1001,29 +1132,175 @@ onMounted(async () => {
 .form-vertical {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 20px;
 }
 
 .form-vertical .form-field label {
   font-weight: 600;
 }
 
+/* 对话框底部 */
 .dialog-footer {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e2e8f0;
 }
 
-.dialog-footer .ant-btn {
+.dialog-footer :deep(.ant-btn) {
   min-width: 120px;
+  height: 40px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.dialog-footer :deep(.ant-btn-primary) {
+  background: linear-gradient(135deg, #00A67C 0%, #008c69 100%);
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 166, 124, 0.3);
+}
+
+.dialog-footer :deep(.ant-btn-primary:hover) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 166, 124, 0.4);
+}
+
+.dialog-footer :deep(.ant-btn-primary:active) {
+  transform: scale(0.98);
+}
+
+.dialog-footer :deep(.ant-btn-default) {
+  border-color: #e2e8f0;
+}
+
+.dialog-footer :deep(.ant-btn-default:hover) {
+  border-color: #00A67C;
+  color: #00A67C;
+}
+
+/* 表格样式 */
+.course-table :deep(.ant-table) {
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .course-table :deep(.ant-table-thead > tr > th) {
-  background: #f8fafc;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   font-weight: 600;
+  color: #334155;
+  border-bottom: 2px solid #e2e8f0;
+  padding: 16px;
+}
+
+.course-table :deep(.ant-table-tbody > tr) {
+  transition: all 0.2s ease;
+}
+
+.course-table :deep(.ant-table-tbody > tr:hover) {
+  background: #f8fafc;
+  box-shadow: inset 0 0 0 1px #e2e8f0;
 }
 
 .course-table :deep(.ant-table-tbody > tr > td) {
-  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+  border-bottom: 1px solid #f1f5f9;
+  padding: 14px 16px;
+}
+
+/* 操作按钮组 */
+.action-group {
+  display: flex;
+  gap: 8px;
+}
+
+.action-group :deep(.ant-btn-link) {
+  padding: 0;
+  height: auto;
+  transition: all 0.2s ease;
+}
+
+.action-group :deep(.ant-btn-link:hover) {
+  transform: scale(1.05);
+}
+
+/* 颜色标签 */
+.color-tag {
+  border-radius: 6px;
+  font-weight: 500;
+  padding: 4px 12px;
+}
+
+/* Alert 样式优化 */
+:deep(.ant-alert) {
+  border-radius: 12px;
+  border: none;
+  padding: 16px;
+}
+
+:deep(.ant-alert-info) {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+}
+
+/* 模态框样式 */
+:deep(.ant-modal-content) {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+:deep(.ant-modal-header) {
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+  border-bottom: 2px solid #e2e8f0;
+  padding: 20px 24px;
+}
+
+:deep(.ant-modal-title) {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1E293B;
+}
+
+:deep(.ant-modal-body) {
+  padding: 28px 24px;
+}
+
+/* Divider 优化 */
+:deep(.ant-divider) {
+  margin: 24px 0;
+  border-color: #e2e8f0;
+}
+
+:deep(.ant-divider-inner-text) {
+  font-weight: 600;
+  color: #64748B;
+}
+
+/* 全局按钮优化 */
+:deep(.ant-btn) {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+:deep(.ant-btn:hover) {
+  transform: translateY(-1px);
+}
+
+:deep(.ant-btn:active) {
+  transform: scale(0.98);
+}
+
+/* Tag 优化 */
+:deep(.ant-tag) {
+  border-radius: 6px;
+  border: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+:deep(.ant-tag:hover) {
+  transform: scale(1.05);
 }
 </style>

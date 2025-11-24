@@ -368,46 +368,98 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+/* CSS变量定义 */
+:root {
+  --primary-gradient: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
 .snapshot-list-page {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  color: #1f2937;
+  gap: 32px;
+  color: #1E293B;
+  background: linear-gradient(to bottom, #F8FAFC 0%, #F1F5F9 100%);
+  min-height: 100vh;
+  padding: 24px;
 }
 
+/* 页面英雄区域 */
 .page-hero {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 28px 32px;
-  gap: 32px;
+  padding: 32px 40px;
+  gap: 40px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.page-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #2563eb 0%, #6366F1 50%, #8B5CF6 100%);
+}
+
+.page-hero:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
 }
 
 .hero-text {
-  max-width: 560px;
+  max-width: 600px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  animation: fadeInUp 0.6s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .hero-kicker {
   font-size: 12px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #5f6b7c;
+  color: #64748B;
+  font-weight: 600;
 }
 
 .hero-text h1 {
   margin: 0;
-  font-size: 30px;
+  font-size: 32px;
   font-weight: 700;
-  color: #102a43;
+  color: #1E293B;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .hero-text p {
   margin: 0;
-  font-size: 15px;
-  color: #5f6b7c;
+  font-size: 16px;
+  color: #64748B;
+  line-height: 1.6;
 }
 
 .hero-tags {
@@ -418,8 +470,16 @@ onMounted(async () => {
 
 .hero-tags :deep(.ant-tag) {
   border-radius: 999px;
-  padding: 4px 14px;
+  padding: 6px 16px;
   font-size: 13px;
+  border: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.hero-tags :deep(.ant-tag):hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-sm);
 }
 
 .hero-actions {
@@ -427,10 +487,11 @@ onMounted(async () => {
   align-items: flex-end;
 }
 
+/* 内容区域 */
 .content-sections {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
 }
 
 .filter-form {
@@ -444,26 +505,51 @@ onMounted(async () => {
   min-width: 210px;
 }
 
+.filter-card,
+.data-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+}
+
+.filter-card:hover,
+.data-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
 .filter-card :deep(.ant-card-body),
 .data-card :deep(.ant-card-body) {
-  padding: 22px 26px;
+  padding: 24px 28px;
 }
 
 .data-card :deep(.ant-table) {
   background: transparent;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .data-card :deep(.ant-table-thead > tr > th) {
-  background: #f1f5f9 !important;
-  color: #475569;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
+  color: #334155;
   border-color: #e2e8f0;
   font-weight: 600;
+  padding: 16px;
+}
+
+.data-card :deep(.ant-table-tbody > tr) {
+  transition: all 0.2s ease;
+}
+
+.data-card :deep(.ant-table-tbody > tr:hover) {
+  box-shadow: inset 0 0 0 1px #e2e8f0;
 }
 
 .data-card :deep(.ant-table-tbody > tr > td) {
   background: #ffffff;
-  border-color: #e5e9f0;
-  color: #1f2937;
+  border-color: #f1f5f9;
+  color: #1E293B;
+  padding: 14px 16px;
 }
 
 .data-card :deep(.ant-table-row:hover > td) {
@@ -477,26 +563,77 @@ onMounted(async () => {
 .pagination-wrapper {
   display: flex;
   justify-content: flex-end;
-  margin-top: 18px;
+  margin-top: 20px;
 }
 
 .empty-block {
-  padding: 44px 0;
+  padding: 60px 0;
 }
 
 .empty-block :deep(.ant-empty-description) {
-  color: #6b7280;
+  color: #64748B;
 }
 
+/* 全局按钮优化 */
+:deep(.ant-btn) {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+:deep(.ant-btn:hover) {
+  transform: translateY(-1px);
+}
+
+:deep(.ant-btn:active) {
+  transform: scale(0.98);
+}
+
+:deep(.ant-btn-primary) {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  border: none;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+:deep(.ant-btn-primary:hover) {
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+}
+
+:deep(.ant-btn-link) {
+  transition: all 0.2s ease;
+}
+
+:deep(.ant-btn-link:hover) {
+  transform: scale(1.05);
+}
+
+/* 表单优化 */
+:deep(.ant-input),
+:deep(.ant-select-selector),
+:deep(.ant-picker) {
+  border-radius: 8px;
+  border-color: #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+:deep(.ant-input:focus),
+:deep(.ant-select-focused .ant-select-selector),
+:deep(.ant-picker-focused) {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* 响应式 */
 @media (max-width: 960px) {
   .snapshot-list-page {
-    gap: 20px;
+    gap: 24px;
+    padding: 16px;
   }
 
   .page-hero {
     flex-direction: column;
     align-items: flex-start;
-    padding: 24px 24px;
+    padding: 24px;
   }
 
   .hero-actions {
@@ -512,7 +649,11 @@ onMounted(async () => {
 
 @media (max-width: 576px) {
   .page-hero {
-    padding: 22px 18px;
+    padding: 20px;
+  }
+
+  .hero-text h1 {
+    font-size: 24px;
   }
 
   .filter-card :deep(.ant-card-body),

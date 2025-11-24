@@ -433,64 +433,89 @@ function deriveCourseTime(snapshot, course) {
 </script>
 
 <style scoped>
+/* CSS变量定义 */
+:root {
+  --primary-gradient: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
 .snapshot-merge-page {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  color: #1f2937;
+  gap: 32px;
+  color: #1E293B;
+  background: linear-gradient(to bottom, #F8FAFC 0%, #F1F5F9 100%);
+  min-height: 100vh;
+  padding: 24px;
 }
 
 .page-content {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 32px;
+  animation: fadeInUp 0.6s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .merge-content {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 28px;
 }
 
 .months-stack {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
 }
 
+/* 发票预览 */
 .invoice-preview {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 
 .invoice-sheet {
   width: 794px;
   margin: 0 auto;
   background: #ffffff;
-  color: #1f2937;
-  padding: 32px 36px;
-  border-radius: 12px;
-  box-shadow: 0 12px 34px rgba(15, 23, 42, 0.08);
+  color: #1E293B;
+  padding: 36px 40px;
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
 }
 
 .invoice-green-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(135deg, #16a34a, #1a9a6a);
-  border-radius: 10px;
-  padding: 18px 24px;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  border-radius: 12px;
+  padding: 24px 28px;
   color: #ffffff;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
 .invoice-logo {
-  height: 46px;
+  height: 50px;
 }
 
 .invoice-title {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -498,7 +523,7 @@ function deriveCourseTime(snapshot, course) {
 
 .invoice-subtitle {
   font-size: 14px;
-  opacity: 0.85;
+  opacity: 0.9;
   margin-top: 4px;
 }
 
@@ -506,92 +531,105 @@ function deriveCourseTime(snapshot, course) {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 24px;
+  gap: 16px;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #e2e8f0;
 }
 
 .invoice-meta-header h2 {
   margin: 0;
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 700;
-  color: #0f172a;
+  color: #1E293B;
+  letter-spacing: -0.02em;
 }
 
 .invoice-meta-header p {
-  margin: 4px 0 0;
-  color: #475569;
+  margin: 6px 0 0;
+  color: #64748B;
+  font-size: 14px;
 }
 
 .invoice-meta-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   font-size: 14px;
-  color: #475569;
+  color: #64748B;
 }
 
 .invoice-body {
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 32px;
 }
 
 .invoice-block {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 18px 20px;
+  padding: 20px;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   background: #f8fafc;
+  transition: all 0.3s ease;
+}
+
+.invoice-block:hover {
+  box-shadow: var(--shadow-sm);
 }
 
 .invoice-grand {
-  background: linear-gradient(135deg, rgba(14, 165, 233, 0.08), rgba(15, 118, 110, 0.1));
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(99, 102, 241, 0.08));
+  border-color: rgba(37, 99, 235, 0.3);
 }
 
 .block-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
 .block-header h3 {
   margin: 0;
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 600;
-  color: #0f172a;
+  color: #1E293B;
 }
 
 .block-header p {
-  margin: 4px 0 0;
-  color: #64748b;
+  margin: 6px 0 0;
+  color: #64748B;
   font-size: 13px;
 }
 
 .block-content {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
 .block-content h4 {
   margin: 0;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
-  color: #0f172a;
+  color: #1E293B;
 }
 
+/* 表格样式 */
 .invoice-table {
   width: 100%;
   border-collapse: collapse;
   border: 1px solid #e2e8f0;
   background: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .invoice-table thead {
-  background: #f1f5f9;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
 }
 
 .invoice-table th,
@@ -600,12 +638,20 @@ function deriveCourseTime(snapshot, course) {
   border-bottom: 1px solid #e2e8f0;
   text-align: left;
   font-size: 13px;
-  color: #1e293b;
+  color: #1E293B;
 }
 
 .invoice-table th {
   font-weight: 600;
-  color: #0f172a;
+  color: #334155;
+}
+
+.invoice-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.invoice-table tbody tr:hover {
+  background: #f8fafc;
 }
 
 .invoice-table tbody tr:last-child td {
@@ -616,12 +662,14 @@ function deriveCourseTime(snapshot, course) {
   text-align: center;
   color: #94a3b8;
   font-style: italic;
+  padding: 12px;
+  font-size: 12px;
 }
 
 .block-subtotals {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
 }
 
 .block-subtotals div {
@@ -631,43 +679,146 @@ function deriveCourseTime(snapshot, course) {
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
-  padding: 10px 14px;
+  padding: 12px 16px;
   font-size: 13px;
-  color: #0f172a;
+  color: #1E293B;
+  transition: all 0.2s ease;
+}
+
+.block-subtotals div:hover {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
 }
 
 .block-subtotals strong {
   font-size: 14px;
   font-weight: 700;
+  color: #2563eb;
 }
 
 .extra-section {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin-top: 12px;
+}
+
+.extra-section h4 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1E293B;
 }
 
 .invoice-table .grand-row td {
   font-weight: 700;
-  color: #0f766e;
+  color: #2563eb;
+  font-size: 14px;
 }
 
 .invoice-actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 18px;
+  margin-top: 20px;
 }
 
+/* 全局按钮优化 */
+:deep(.ant-btn) {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+:deep(.ant-btn:hover) {
+  transform: translateY(-1px);
+}
+
+:deep(.ant-btn:active) {
+  transform: scale(0.98);
+}
+
+:deep(.ant-btn-primary) {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  border: none;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+:deep(.ant-btn-primary:hover) {
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+}
+
+/* Tag 优化 */
+:deep(.ant-tag) {
+  border-radius: 6px;
+  border: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+:deep(.ant-tag:hover) {
+  transform: scale(1.05);
+}
+
+/* Spin 加载效果 */
+:deep(.ant-spin) {
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Empty 状态 */
+:deep(.ant-empty) {
+  padding: 60px 0;
+}
+
+:deep(.ant-empty-description) {
+  color: #64748B;
+}
+
+/* 模态框优化 */
+:deep(.ant-modal-content) {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+:deep(.ant-modal-header) {
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+  border-bottom: 2px solid #e2e8f0;
+  padding: 20px 24px;
+}
+
+:deep(.ant-modal-title) {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1E293B;
+}
+
+:deep(.ant-modal-body) {
+  padding: 28px 24px;
+}
+
+/* 响应式 */
 @media (max-width: 900px) {
   .invoice-sheet {
     width: 100%;
-    padding: 24px;
+    padding: 28px;
   }
 }
 
 @media (max-width: 768px) {
   .snapshot-merge-page {
-    gap: 20px;
+    gap: 24px;
+    padding: 16px;
+  }
+
+  .invoice-meta-header {
+    flex-direction: column;
+  }
+
+  .block-subtotals {
+    grid-template-columns: 1fr;
   }
 }
 </style>
