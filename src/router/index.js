@@ -7,6 +7,8 @@ const SnapshotMergePage = () => import('../pages/SnapshotMergePage.vue');
 const EliteHomePage = () => import('../pages/EliteHomePage.vue');
 const GeometryLessonPage = () => import('../pages/GeometryLessonPage.vue');
 const WordNoteProcessPage = () => import('../pages/WordNoteProcessPage.vue');
+const WordNoteJobsPage = () => import('../pages/WordNoteJobsPage.vue');
+const WordNoteDetailPage = () => import('../pages/WordNoteDetailPage.vue');
 
 const router = createRouter({
   history: createWebHistory(),
@@ -65,6 +67,22 @@ const router = createRouter({
       component: WordNoteProcessPage,
       meta: {
         title: '英语单词笔记处理',
+      },
+    },
+    {
+      path: '/word-notes/jobs',
+      name: 'word-notes-jobs',
+      component: WordNoteJobsPage,
+      meta: {
+        title: '识别记录管理',
+      },
+    },
+    {
+      path: '/word-notes/jobs/:taskId',
+      name: 'word-notes-detail',
+      component: WordNoteDetailPage,
+      meta: {
+        title: '识别详情',
       },
     },
   ],

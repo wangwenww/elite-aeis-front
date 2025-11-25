@@ -28,6 +28,11 @@
             <template #title>学习资源</template>
             <a-menu-item key="geometry-lesson">几何公式课堂</a-menu-item>
           </a-sub-menu>
+          <a-sub-menu key="english-menu">
+            <template #title>英语教学</template>
+            <a-menu-item key="word-notes">单词识别</a-menu-item>
+            <a-menu-item key="word-notes-jobs">单词管理</a-menu-item>
+          </a-sub-menu>
         </a-menu>
       </nav>
 
@@ -55,6 +60,9 @@ const routeKeyMap = {
   'snapshot-list': 'snapshot-list',
   'snapshot-detail': 'snapshot-list',
   'geometry-lesson': 'geometry-lesson',
+  'word-notes': 'word-notes',
+  'word-notes-jobs': 'word-notes-jobs',
+  'word-notes-detail': 'word-notes-jobs', // 详情页也高亮单词管理菜单
 };
 
 const selectedKeys = computed(() => {
