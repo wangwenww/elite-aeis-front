@@ -9,6 +9,12 @@ const GeometryLessonPage = () => import('../pages/GeometryLessonPage.vue');
 const WordNoteProcessPage = () => import('../pages/WordNoteProcessPage.vue');
 const WordNoteJobsPage = () => import('../pages/WordNoteJobsPage.vue');
 const WordNoteDetailPage = () => import('../pages/WordNoteDetailPage.vue');
+const ClassListPage = () => import('../pages/class/ClassList.vue');
+const ClassDetailPage = () => import('../pages/class/ClassDetail.vue');
+const GradeEntryPage = () => import('../pages/grade/GradeEntry.vue');
+const StudentGradesPage = () => import('../pages/student/StudentGrades.vue');
+const StudentListPage = () => import('../pages/student/StudentList.vue');
+const StudentGradeAnalysisPage = () => import('../pages/student/StudentGradeAnalysis.vue');
 
 const router = createRouter({
   history: createWebHistory(),
@@ -84,6 +90,42 @@ const router = createRouter({
       meta: {
         title: '识别详情',
       },
+    },
+    {
+      path: '/classes',
+      name: 'class-list',
+      component: ClassListPage,
+      meta: { title: '班级管理' },
+    },
+    {
+      path: '/classes/:id',
+      name: 'class-detail',
+      component: ClassDetailPage,
+      meta: { title: '班级详情' },
+    },
+    {
+      path: '/grades/entry',
+      name: 'grade-entry',
+      component: GradeEntryPage,
+      meta: { title: '成绩录入' },
+    },
+    {
+      path: '/students/:id/grades',
+      name: 'student-grades',
+      component: StudentGradesPage,
+      meta: { title: '学生成绩档案' },
+    },
+    {
+      path: '/students',
+      name: 'student-list',
+      component: StudentListPage,
+      meta: { title: '学生管理' },
+    },
+    {
+      path: '/students/:id/analysis',
+      name: 'student-grade-analysis',
+      component: StudentGradeAnalysisPage,
+      meta: { title: '成绩分析' },
     },
   ],
   scrollBehavior() {

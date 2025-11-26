@@ -33,6 +33,13 @@
             <a-menu-item key="word-notes">单词识别</a-menu-item>
             <a-menu-item key="word-notes-jobs">单词管理</a-menu-item>
           </a-sub-menu>
+          <a-sub-menu key="academic-menu">
+            <template #title>教务管理</template>
+            <a-menu-item key="class-list">班级管理</a-menu-item>
+            <a-menu-item key="student-list">学生管理</a-menu-item>
+            <a-menu-item key="grade-entry">成绩录入</a-menu-item>
+            <a-menu-item key="grade-analysis">成绩分析</a-menu-item>
+          </a-sub-menu>
         </a-menu>
       </nav>
 
@@ -62,7 +69,13 @@ const routeKeyMap = {
   'geometry-lesson': 'geometry-lesson',
   'word-notes': 'word-notes',
   'word-notes-jobs': 'word-notes-jobs',
-  'word-notes-detail': 'word-notes-jobs', // 详情页也高亮单词管理菜单
+  'word-notes-detail': 'word-notes-jobs',
+  'class-list': 'class-list',
+  'class-detail': 'class-list',
+  'student-list': 'student-list',
+  'grade-entry': 'grade-entry',
+  'student-grades': 'class-list',
+  'student-grade-analysis': 'grade-analysis',
 };
 
 const selectedKeys = computed(() => {
@@ -77,6 +90,14 @@ function handleMenuClick({ key }) {
     router.push({ name: 'elite-home' }).catch(() => {});
   } else if (key === 'schedule') {
     router.push({ name: 'schedule' }).catch(() => {});
+  } else if (key === 'class-list') {
+    router.push('/classes').catch(() => {});
+  } else if (key === 'student-list') {
+    router.push('/students').catch(() => {});
+  } else if (key === 'grade-entry') {
+    router.push('/grades/entry').catch(() => {});
+  } else if (key === 'grade-analysis') {
+    router.push('/students/1/analysis').catch(() => {});
   } else {
     router.push({ name: key }).catch(() => {});
   }
