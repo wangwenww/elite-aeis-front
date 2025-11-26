@@ -89,138 +89,90 @@ function goHome() {
 
 <style scoped>
 .app-head-banner {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: #ffffff;
-  border-bottom: 1px solid #e5e9f0;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.1);
+  @apply sticky top-0 z-[100] bg-white border-b border-neutral-200 shadow-soft-md backdrop-blur-sm;
+  background: rgba(255, 255, 255, 0.95);
 }
 
 .banner-inner {
-  max-width: 1280px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 32px;
-  gap: 24px;
+  @apply max-w-[1280px] mx-auto flex items-center justify-between py-3.5 px-8 gap-6;
 }
 
 .brand-block {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  padding: 6px 10px;
-  border-radius: 12px;
+  @apply flex items-center gap-3.5 cursor-pointer transition-all duration-300 py-1.5 px-2.5 rounded-2xl;
 }
 
 .brand-block:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.1);
+  @apply -translate-y-0.5 shadow-soft-md;
   background: rgba(226, 232, 240, 0.45);
 }
 
 .logo-wrap {
-  width: 52px;
-  height: 52px;
-  border-radius: 16px;
-  overflow: hidden;
-  background: #eff4fb;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #d8e1ee;
+  @apply w-[52px] h-[52px] rounded-2xl overflow-hidden bg-primary-50 flex items-center justify-center border border-primary-200;
 }
 
 .brand-logo {
-  width: 42px;
-  height: auto;
-  display: block;
+  @apply w-[42px] h-auto block;
 }
 
 .brand-text {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.25;
+  @apply flex flex-col leading-tight;
 }
 
 .brand-name {
-  font-size: 19px;
-  font-weight: 700;
-  color: #14213d;
+  @apply text-lg font-bold text-neutral-900;
   letter-spacing: 0.015em;
 }
 
 .brand-sub {
-  font-size: 13px;
-  color: #4f6274;
+  @apply text-sm text-neutral-600;
 }
 
 .nav-block {
-  flex: 1;
-  display: flex;
-  justify-content: center;
+  @apply flex-1 flex justify-center;
 }
 
 .nav-block :deep(.ant-menu) {
-  background: transparent;
-  border-bottom: none;
+  @apply bg-transparent border-b-0;
 }
 
 .nav-block :deep(.ant-menu-item),
 .nav-block :deep(.ant-menu-submenu-title) {
-  color: #1f2a37;
-  font-size: 15px;
-  font-weight: 500;
-  padding: 0 18px;
+  @apply text-neutral-800 text-[15px] font-medium px-4.5;
 }
 
 .nav-block :deep(.ant-menu-horizontal > .ant-menu-item::after),
 .nav-block :deep(.ant-menu-horizontal > .ant-menu-submenu::after) {
-  border-bottom: 2px solid rgba(29, 78, 216, 0.6);
+  border-bottom: 2px solid rgba(59, 130, 246, 0.6);
   border-radius: 2px;
 }
 
 .nav-block :deep(.ant-menu-item-selected) {
-  color: #1d4ed8;
+  @apply text-primary-600;
 }
 
 .nav-block :deep(.ant-menu-item-selected::after) {
-  border-bottom-color: #1d4ed8;
+  @apply border-primary-600;
 }
 
 .extra-block {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  @apply flex items-center gap-3;
 }
 
 .extra-block :deep(.ant-tag) {
-  background: rgba(29, 78, 216, 0.12);
-  border: none;
-  color: #1d4ed8;
-  font-weight: 600;
+  @apply bg-primary-50 border-0 text-primary-600 font-semibold rounded-xl px-3 py-1;
 }
 
 @media (max-width: 960px) {
   .banner-inner {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 14px 20px;
-    gap: 18px;
+    @apply flex-col items-start py-3.5 px-5 gap-4.5;
   }
 
   .nav-block {
-    width: 100%;
-    justify-content: flex-start;
+    @apply w-full justify-start;
   }
 
   .extra-block {
-    align-self: stretch;
-    justify-content: flex-start;
+    @apply self-stretch justify-start;
   }
 }
 </style>

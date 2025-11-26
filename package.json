@@ -4,13 +4,14 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "VITE_RUNTIME_ENV=local vite --port 45654",
-    "dev:ngrok": "VITE_RUNTIME_ENV=ngrok vite --port 45654",
+    "dev": "vite --port 45654",
+    "dev:ngrok": "vite --port 45654",
     "build": "vite build",
-    "build:ngrok": "VITE_RUNTIME_ENV=ngrok vite build",
+    "build:ngrok": "vite build",
     "preview": "vite preview --port 45654"
   },
   "dependencies": {
+    "@ant-design/icons-vue": "^7.0.1",
     "ant-design-vue": "^4.0.0",
     "axios": "^1.6.0",
     "dayjs": "^1.11.10",
@@ -23,6 +24,9 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.4.0",
-    "vite": "^4.4.9"
+    "autoprefixer": "^10.4.22",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.0",
+    "vite": "^4.5.14"
   }
 }

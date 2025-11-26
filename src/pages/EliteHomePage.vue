@@ -1,7 +1,7 @@
 <template>
   <div class="elite-home">
     <!-- 顶部品牌区 -->
-    <section class="hero surface-card">
+    <section class="hero surface-card animate-fade-in-up">
       <div class="hero-left">
         <div class="hero-brand">
           <img :src="logoUrl" alt="Elite Edu Logo" class="hero-logo" />
@@ -49,14 +49,16 @@
     </section>
 
     <!-- 核心课程 -->
-    <section id="courses" class="section">
+    <section id="courses" class="section animate-fade-in-up delay-100">
       <header class="section-header">
         <h2>核心课程体系</h2>
         <p>覆盖 AEIS 备考 / 小学衔接 / 特色提升多条路径，为不同阶段学生提供定制化方案。</p>
       </header>
       <div class="card-grid">
         <div class="course-card" v-for="card in courseCards" :key="card.key">
-          <div class="course-icon">{{ card.icon }}</div>
+          <div class="course-icon">
+            <component :is="card.icon" />
+          </div>
           <h3>{{ card.title }}</h3>
           <p>{{ card.desc }}</p>
           <ul>
@@ -68,14 +70,16 @@
     </section>
 
     <!-- 教学特色 -->
-    <section class="section alt">
+    <section class="section alt animate-fade-in-up delay-200">
       <header class="section-header">
         <h2>教学特色</h2>
         <p>以结果为导向的个性化教学方案，结合数据化评测，持续关注每位学生的成长。</p>
       </header>
       <div class="feature-grid">
         <div class="feature-card" v-for="item in features" :key="item.title">
-          <div class="feature-icon">{{ item.icon }}</div>
+          <div class="feature-icon">
+            <component :is="item.icon" />
+          </div>
           <h3>{{ item.title }}</h3>
           <p>{{ item.desc }}</p>
         </div>
@@ -83,7 +87,7 @@
     </section>
 
     <!-- 师资力量 -->
-    <section class="section">
+    <section class="section animate-fade-in-up delay-300">
       <header class="section-header">
         <h2>资深师资团队</h2>
         <p>严选具备国际教学经验的教师，为学生的学习保驾护航。</p>
@@ -101,7 +105,7 @@
     </section>
 
     <!-- 成功案例 -->
-    <section class="section alt">
+    <section class="section alt animate-fade-in-up delay-400">
       <header class="section-header">
         <h2>学生成功故事</h2>
         <p>用事实说话，见证精英教育的成果。</p>
@@ -120,12 +124,12 @@
     </section>
 
     <!-- 关于我们 -->
-    <section class="section">
+    <section class="section animate-fade-in-up delay-500">
       <header class="section-header">
         <h2>关于 Elite Edu</h2>
         <p>源自对教育品质的极致追求，坚持“学术为本、结果导向、人格并重”的理念。</p>
       </header>
-      <a-card :bordered="false">
+      <a-card :bordered="false" class="about-card">
         <p>
           我们深耕新加坡本地与国际教育，整合优质教师资源与评测工具，为不同阶段的学生提供定制化学习方案。
           从入学评估、学习规划到升学指导，全面提升学生的学术能力与综合素养。
@@ -134,14 +138,14 @@
     </section>
 
     <!-- 联系我们 -->
-    <section id="contact" class="section alt">
+    <section id="contact" class="section alt animate-fade-in-up delay-600">
       <header class="section-header">
         <h2>联系我们</h2>
         <p>欢迎留下需求，我们的顾问将尽快与您联系。</p>
       </header>
-      <a-row :gutter="[16, 16]">
+      <a-row :gutter="[24, 24]">
         <a-col :xs="24" :md="14">
-          <a-card :bordered="false">
+          <a-card :bordered="false" class="contact-form-card">
             <a-form layout="vertical">
               <a-form-item label="姓名">
                 <a-input v-model:value="form2.name" placeholder="您的姓名" />
@@ -160,10 +164,28 @@
           </a-card>
         </a-col>
         <a-col :xs="24" :md="10">
-          <a-card :bordered="false" class="contact-info">
-            <p><strong>地址：</strong>Singapore · Central Area</p>
-            <p><strong>邮箱：</strong>contact@elite-edu.sg</p>
-            <p><strong>电话：</strong>+65-0000-0000</p>
+          <a-card :bordered="false" class="contact-info h-full">
+            <div class="contact-item">
+              <EnvironmentOutlined class="contact-icon" />
+              <div>
+                <strong>地址</strong>
+                <p>Singapore · Central Area</p>
+              </div>
+            </div>
+            <div class="contact-item">
+              <MailOutlined class="contact-icon" />
+              <div>
+                <strong>邮箱</strong>
+                <p>contact@elite-edu.sg</p>
+              </div>
+            </div>
+            <div class="contact-item">
+              <PhoneOutlined class="contact-icon" />
+              <div>
+                <strong>电话</strong>
+                <p>+65-0000-0000</p>
+              </div>
+            </div>
           </a-card>
         </a-col>
       </a-row>
@@ -175,6 +197,20 @@
 import { reactive, ref } from 'vue';
 import { message } from 'ant-design-vue';
 import http from '../api/http';
+import {
+  AimOutlined,
+  BookOutlined,
+  RocketOutlined,
+  LineChartOutlined,
+  CompassOutlined,
+  TeamOutlined,
+  UsergroupAddOutlined,
+  BulbOutlined,
+  GlobalOutlined,
+  EnvironmentOutlined,
+  MailOutlined,
+  PhoneOutlined
+} from '@ant-design/icons-vue';
 
 const logoUrl = new URL('../assets/elite-logo.png', import.meta.url).href;
 
@@ -193,33 +229,33 @@ const courseCards = [
   {
     key: 'aeis',
     title: 'AEIS 全周期备考',
-    icon: '🎯',
+    icon: AimOutlined,
     desc: '分段目标拆解 + 模考评测 + 升学规划',
     features: ['入学诊断', '阶段模考', '升学面试辅导'],
   },
   {
     key: 'primary',
     title: '新加坡小学衔接',
-    icon: '📘',
+    icon: BookOutlined,
     desc: '语言与学科学段衔接，迅速适应课程体系',
     features: ['语言适应', '课堂文化导入', '学习方法指导'],
   },
   {
     key: 'advance',
     title: '特色提升课程',
-    icon: '🚀',
+    icon: RocketOutlined,
     desc: '薄弱点诊断，定制化强化方案，提升综合能力',
     features: ['竞赛培训', '学术写作', '口语表达'],
   },
 ];
 
 const features = [
-  { icon: '📈', title: '数据化评测', desc: '过程可视化，结果量化，持续追踪学习曲线' },
-  { icon: '🧭', title: '个性化路径', desc: '基于诊断的分层/分项教学，因材施教' },
-  { icon: '🧑‍🏫', title: '小班精品', desc: '控班规模，保障互动与反馈效率' },
-  { icon: '🤝', title: '家校共育', desc: '定期汇报机制，家长随时掌握学习进度' },
-  { icon: '🧠', title: '方法论沉淀', desc: '多年教研打磨，建立可迁移的学习能力' },
-  { icon: '🌏', title: '国际视野', desc: '融合国际标准与本地课程要求' },
+  { icon: LineChartOutlined, title: '数据化评测', desc: '过程可视化，结果量化，持续追踪学习曲线' },
+  { icon: CompassOutlined, title: '个性化路径', desc: '基于诊断的分层/分项教学，因材施教' },
+  { icon: TeamOutlined, title: '小班精品', desc: '控班规模，保障互动与反馈效率' },
+  { icon: UsergroupAddOutlined, title: '家校共育', desc: '定期汇报机制，家长随时掌握学习进度' },
+  { icon: BulbOutlined, title: '方法论沉淀', desc: '多年教研打磨，建立可迁移的学习能力' },
+  { icon: GlobalOutlined, title: '国际视野', desc: '融合国际标准与本地课程要求' },
 ];
 
 const teachers = [
@@ -304,245 +340,226 @@ async function submitContact() {
 
 <style scoped>
 .elite-home {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-  color: #1f2937;
+  @apply flex flex-col gap-7 text-neutral-800;
 }
 
 .surface-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+  @apply bg-white border border-neutral-200 rounded-3xl shadow-soft-xl transition-all duration-300;
 }
 
 .hero {
-  display: grid;
+  @apply grid gap-8 p-8 relative overflow-hidden;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 32px;
-  padding: 32px;
 }
 
 .hero-brand {
-  display: flex;
-  align-items: center;
-  gap: 18px;
+  @apply flex items-center gap-5;
 }
 
 .hero-logo {
-  width: 64px;
-  height: 64px;
+  @apply w-16 h-16 rounded-2xl shadow-soft-md;
 }
 
 .hero-title {
-  margin: 0;
-  font-size: 28px;
-  font-weight: 700;
-  color: #102a43;
+  @apply m-0 text-3xl font-bold text-neutral-900 tracking-tight;
 }
 
 .hero-desc {
-  margin: 6px 0 0;
-  color: #475569;
+  @apply mt-2 text-neutral-600 leading-relaxed;
 }
 
 .hero-actions {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
+  @apply flex gap-3 flex-wrap mt-6;
 }
 
 .hero-stats {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
+  @apply flex gap-4 flex-wrap mt-6;
 }
 
 .stat {
-  min-width: 110px;
-  padding: 12px 16px;
-  border-radius: 12px;
-  background: #f2f5f9;
-  text-align: center;
+  @apply min-w-[110px] px-5 py-4 rounded-2xl bg-gradient-to-br from-primary-50 to-primary-100 text-center transition-all duration-300 hover:shadow-soft-md hover:scale-105 border border-primary-100;
 }
 
 .stat-value {
-  font-size: 22px;
-  font-weight: 700;
-  color: #0f766e;
+  @apply text-2xl font-bold text-primary-600;
 }
 
 .stat-label {
-  margin-top: 4px;
-  color: #64748b;
-  font-size: 13px;
+  @apply mt-1 text-neutral-600 text-sm font-medium;
+}
+
+.hero-form {
+  @apply shadow-soft-xl rounded-3xl border-neutral-200;
 }
 
 .section {
-  padding: 26px 30px;
+  @apply py-8 px-9;
 }
 
 .section.alt {
-  background: #f5f7fa;
-  border-radius: 16px;
+  @apply bg-gradient-to-br from-neutral-50 to-neutral-100 rounded-3xl border border-neutral-100;
 }
 
 .section-header {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 14px;
+  @apply flex flex-col gap-2 mb-8;
 }
 
 .section-header h2 {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 700;
-  color: #0f172a;
+  @apply m-0 text-3xl font-bold text-neutral-900 tracking-tight;
 }
 
 .section-header p {
-  margin: 0;
-  color: #64748b;
+  @apply m-0 text-neutral-600 leading-relaxed max-w-2xl;
 }
 
 .card-grid {
-  display: grid;
-  gap: 20px;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  @apply grid gap-6;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
 .course-card {
-  border: 1px solid #e5e9f0;
-  border-radius: 16px;
-  padding: 20px;
-  background: #ffffff;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  transition: box-shadow 0.2s ease;
-}
-
-.course-card:hover {
-  box-shadow: 0 16px 32px rgba(15, 23, 42, 0.08);
+  @apply border border-neutral-200 rounded-3xl p-7 bg-white flex flex-col gap-4 transition-all duration-300 hover:shadow-soft-xl hover:-translate-y-1 hover:border-primary-200;
 }
 
 .course-icon {
-  font-size: 28px;
+  @apply text-4xl text-primary-500 mb-2;
+}
+
+.course-card h3 {
+  @apply text-xl font-bold text-neutral-900 m-0;
+}
+
+.course-card p {
+  @apply text-neutral-600 leading-relaxed m-0;
 }
 
 .course-card ul {
-  padding-left: 18px;
-  margin: 0;
-  color: #48566a;
+  @apply pl-5 m-0 text-neutral-700 space-y-2;
+}
+
+.course-card ul li {
+  @apply leading-relaxed;
 }
 
 .feature-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 18px;
+  @apply grid gap-5;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
 .feature-card {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  border-radius: 14px;
-  border: 1px solid #e2e8f0;
-  background: #ffffff;
-  padding: 18px;
+  @apply flex flex-col gap-3 rounded-2xl border border-neutral-200 bg-white p-6 transition-all duration-300 hover:shadow-soft-md hover:border-primary-300 hover:-translate-y-0.5;
 }
 
 .feature-icon {
-  font-size: 24px;
+  @apply text-3xl text-primary-600 mb-1;
+}
+
+.feature-card h3 {
+  @apply text-lg font-bold text-neutral-900 m-0;
+}
+
+.feature-card p {
+  @apply text-neutral-600 text-sm leading-relaxed m-0;
 }
 
 .teacher-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 18px;
+  @apply grid gap-6;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
 .teacher-card {
-  display: flex;
-  gap: 16px;
-  border-radius: 16px;
-  border: 1px solid #e5e9f0;
-  padding: 18px;
-  background: #ffffff;
+  @apply flex gap-5 rounded-3xl border border-neutral-200 p-6 bg-white transition-all duration-300 hover:shadow-soft-lg hover:border-emerald-200;
 }
 
 .teacher-avatar {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
+  @apply w-16 h-16 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 text-white flex items-center justify-center font-bold text-xl shadow-soft ring-4 ring-emerald-50;
+  flex-shrink: 0;
+}
+
+.teacher-card h3 {
+  @apply text-lg font-bold text-neutral-900 m-0 mb-1;
 }
 
 .teacher-title {
-  color: #0f766e;
-  font-weight: 500;
+  @apply text-primary-600 font-medium text-sm mb-2;
+}
+
+.teacher-card p {
+  @apply text-neutral-600 text-sm leading-relaxed m-0;
 }
 
 .result-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 18px;
+  @apply grid gap-6;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
 .result-card {
-  border-radius: 16px;
-  border: 1px solid #e5e9f0;
-  background: #ffffff;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  @apply rounded-3xl border border-neutral-200 bg-white p-7 flex flex-col gap-4 transition-all duration-300 hover:shadow-soft-lg hover:border-emerald-300 hover:-translate-y-0.5;
 }
 
 .result-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  @apply flex justify-between items-center;
 }
 
 .student-avatar {
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  background: #e0f2f1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  color: #0f766e;
+  @apply w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center font-bold text-emerald-700 text-base border border-emerald-100;
 }
 
 .result-badge {
-  padding: 4px 10px;
-  background: #ecfdf5;
-  border-radius: 999px;
-  color: #047857;
-  font-size: 13px;
+  @apply px-3 py-1 bg-emerald-50 rounded-full text-emerald-700 text-xs font-bold tracking-wide uppercase;
+}
+
+.result-card h3 {
+  @apply text-lg font-bold text-neutral-900 m-0;
 }
 
 .result-track {
-  color: #64748b;
+  @apply text-neutral-500 text-sm font-medium;
 }
 
-.contact-info p {
-  margin: 0 0 8px;
+.result-card p {
+  @apply text-neutral-600 leading-relaxed m-0;
+}
+
+.about-card {
+  @apply rounded-3xl shadow-soft-lg border-neutral-200;
+}
+
+.contact-form-card {
+  @apply rounded-3xl shadow-soft-lg border-neutral-200 h-full;
+}
+
+.contact-info {
+  @apply rounded-3xl shadow-soft-lg border-neutral-200 bg-white p-8 flex flex-col justify-center gap-8;
+}
+
+.contact-item {
+  @apply flex items-start gap-4;
+}
+
+.contact-icon {
+  @apply text-2xl text-primary-600 mt-1;
+}
+
+.contact-item strong {
+  @apply block text-neutral-900 text-lg mb-1;
+}
+
+.contact-item p {
+  @apply m-0 text-neutral-600 text-base;
 }
 
 @media (max-width: 960px) {
   .hero {
-    padding: 24px;
+    @apply p-6;
+  }
+
+  .hero-title {
+    @apply text-2xl;
+  }
+
+  .section-header h2 {
+    @apply text-2xl;
   }
 }
 </style>

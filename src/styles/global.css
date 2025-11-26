@@ -1,61 +1,100 @@
-:root {
-  color-scheme: light;
-  font-family: 'Inter', 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
-    'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
-  background-color: #f5f7fa;
-  color: #0f172a;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    @apply m-0 p-0 min-h-screen w-full bg-neutral-50 text-neutral-900;
+    font-family: 'Inter', 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  }
+
+  #app {
+    @apply min-h-screen w-full relative overflow-x-hidden;
+  }
+
+  a {
+    @apply no-underline;
+    color: inherit;
+  }
+
+  * {
+    @apply box-border;
+  }
+
+  ::selection {
+    @apply bg-primary-200 text-neutral-900;
+  }
 }
 
-html,
-body,
-#app {
-  margin: 0;
-  padding: 0;
-  min-height: 100%;
-  width: 100%;
-  background-color: #f5f7fa;
-  color: #0f172a;
+@layer components {
+  .app-shell {
+    @apply max-w-[1360px] mx-auto relative z-10;
+  }
+
+  .app-main {
+    @apply w-full pb-12;
+  }
+
+  .surface-card {
+    @apply bg-white rounded-2xl border border-neutral-200 shadow-soft-lg;
+  }
+
+  .muted-text {
+    @apply text-neutral-600;
+  }
+
+  .accent-text {
+    @apply text-primary-700;
+  }
+
+  .section-spacing {
+    @apply mb-8;
+  }
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+@layer utilities {
+  .animate-fade-in-up {
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+    transform: translateY(20px);
+  }
 
-* {
-  box-sizing: border-box;
-}
+  .delay-100 {
+    animation-delay: 100ms;
+  }
 
-.app-shell {
-  max-width: 1360px;
-  margin: 0 auto;
-}
+  .delay-200 {
+    animation-delay: 200ms;
+  }
 
-.app-main {
-  width: 100%;
-  padding-bottom: 48px;
-}
+  .delay-300 {
+    animation-delay: 300ms;
+  }
 
-.surface-card {
-  background-color: #ffffff;
-  border-radius: 16px;
-  border: 1px solid #e5e9f0;
-  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
-}
+  .delay-400 {
+    animation-delay: 400ms;
+  }
 
-.muted-text {
-  color: #5f6b7c;
-}
+  .delay-500 {
+    animation-delay: 500ms;
+  }
 
-.accent-text {
-  color: #1d4ed8;
-}
+  .delay-600 {
+    animation-delay: 600ms;
+  }
 
-.section-spacing {
-  margin-bottom: 32px;
-}
-
-::selection {
-  background: rgba(45, 84, 165, 0.3);
-  color: #0f172a;
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
