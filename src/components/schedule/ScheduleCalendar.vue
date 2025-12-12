@@ -11,49 +11,51 @@
       </div>
     </template>
 
-    <div v-if="cells.length" class="calendar-grid">
-      <div class="calendar-header" v-for="dayLabel in weekDays" :key="`header-${dayLabel}`">{{ dayLabel }}</div>
+    <div class="calendar-scroll-wrapper" v-if="cells.length">
+      <div class="calendar-grid">
+        <div class="calendar-header" v-for="dayLabel in weekDays" :key="`header-${dayLabel}`">{{ dayLabel }}</div>
 
-      <div
-        v-for="day in cells"
-        :key="day.key"
-        class="calendar-cell"
-        :class="{ 'is-today': day.isToday, 'is-other-month': !day.inCurrentMonth }"
-        @dragover.prevent="event => emit('drag-over', event, day)"
-        @dragleave="event => emit('drag-leave', event)"
-        @drop.prevent="event => emit('drop', event, day)"
-      >
-        <div class="cell-header">
-          <span class="cell-date" :class="{ weekend: day.isWeekend }">{{ day.display }}</span>
-          <a-button
-            v-if="day.inCurrentMonth"
-            size="small"
-            type="default"
-            class="cell-add-btn"
-            @click.stop="emit('open-add', day.date)"
-          >
-            <template #icon><PlusOutlined /></template>
-            添加
-          </a-button>
+        <div
+          v-for="day in cells"
+          :key="day.key"
+          class="calendar-cell"
+          :class="{ 'is-today': day.isToday, 'is-other-month': !day.inCurrentMonth }"
+          @dragover.prevent="event => emit('drag-over', event, day)"
+          @dragleave="event => emit('drag-leave', event)"
+          @drop.prevent="event => emit('drop', event, day)"
+        >
+          <div class="cell-header">
+            <span class="cell-date" :class="{ weekend: day.isWeekend }">{{ day.display }}</span>
+            <a-button
+              v-if="day.inCurrentMonth"
+              size="small"
+              type="default"
+              class="cell-add-btn"
+              @click.stop="emit('open-add', day.date)"
+            >
+              <template #icon><PlusOutlined /></template>
+              添加
+            </a-button>
+          </div>
+
+          <div v-if="day.classes.length" class="cell-classes">
+            <a-tag
+              v-for="cls in day.classes"
+              :key="cls.uid"
+              :style="getCourseStyle(cls.course_css_class)"
+              class="class-tag"
+              closable
+              @close="emit('delete-lesson', day.date, cls.uid)"
+            >
+              <div class="class-tag-text">
+                <strong>{{ cls.course_name }}</strong>
+                <span>{{ cls.course_time }}</span>
+              </div>
+            </a-tag>
+          </div>
+
+          <div v-else class="cell-empty">无课程</div>
         </div>
-
-        <div v-if="day.classes.length" class="cell-classes">
-          <a-tag
-            v-for="cls in day.classes"
-            :key="cls.uid"
-            :style="{ borderLeftColor: getCourseColor(cls.course_css_class) }"
-            class="class-tag"
-            closable
-            @close="emit('delete-lesson', day.date, cls.uid)"
-          >
-            <div class="class-tag-text">
-              <strong>{{ cls.course_name }}</strong>
-              <span>{{ cls.course_time }}</span>
-            </div>
-          </a-tag>
-        </div>
-
-        <div v-else class="cell-empty">无课程</div>
       </div>
     </div>
 
@@ -97,7 +99,22 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['open-add', 'delete-lesson', 'drag-over', 'drag-leave', 'drop']);
+const colorMap = {
+  blue: { bg: '#eff6ff', border: '#2563eb', text: '#1e3a8a' },
+  green: { bg: '#f0fdf4', border: '#16a34a', text: '#14532d' },
+  orange: { bg: '#fff7ed', border: '#ea580c', text: '#7c2d12' },
+  pink: { bg: '#fdf4ff', border: '#db2777', text: '#831843' },
+  purple: { bg: '#faf5ff', border: '#9333ea', text: '#581c87' },
+};
+
+function getCourseStyle(cssClass) {
+  const theme = colorMap[cssClass] || colorMap.blue;
+  return {
+    backgroundColor: theme.bg,
+    borderLeftColor: theme.border,
+    color: theme.text
+  };
+}
 
 const weeks = computed(() => {
   const normalizedMatrix = normalizeMatrix(props.calendarMatrix);
@@ -201,6 +218,27 @@ function normalizeDay(day, fallbackIndex) {
 </script>
 
 <style scoped>
+.calendar-scroll-wrapper {
+  overflow-x: auto;
+  padding-bottom: 8px;
+  /* Custom scrollbar for better look */
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.calendar-scroll-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+
+.calendar-scroll-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.calendar-scroll-wrapper::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 4px;
+}
+
 .calendar-card :deep(.ant-card-head) {
   background: transparent;
   border-bottom: 1px solid #e5e9f0;
@@ -302,10 +340,11 @@ function normalizeDay(day, fallbackIndex) {
   align-items: center;
   width: 100%;
   padding: 10px 14px;
-  border-radius: 12px;
-  background: #fdf4ff;
-  border: 1px solid #f0abfc;
-  box-shadow: 0 10px 24px rgba(190, 24, 93, 0.12);
+  border-radius: 4px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-left-width: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .class-tag-text {

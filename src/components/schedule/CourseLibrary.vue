@@ -15,7 +15,9 @@
         class="course-card"
         size="small"
         draggable="true"
+        :style="getCourseStyle(course.css_class)"
         @dragstart="event => emit('drag-start', event, course)"
+        @click="emit('select-course', course)"
       >
         <template #title>
           <div class="course-card-title">{{ course.name }}</div>
@@ -58,6 +60,25 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['drag-start', 'manage-courses']);
+
+// Helper to map color names to hex values
+const colorMap = {
+    blue: { bg: '#eff6ff', border: '#2563eb', text: '#1e3a8a' }, 
+    green: { bg: '#f0fdf4', border: '#16a34a', text: '#14532d' }, 
+    orange: { bg: '#fff7ed', border: '#ea580c', text: '#7c2d12' }, 
+    pink: { bg: '#fdf4ff', border: '#db2777', text: '#831843' }, 
+    purple: { bg: '#faf5ff', border: '#9333ea', text: '#581c87' }, 
+};
+
+function getCourseStyle(cssClass) {
+    const theme = colorMap[cssClass] || colorMap.blue;
+    return {
+        backgroundColor: theme.bg,
+        borderLeftColor: theme.border,
+        borderLeftWidth: '4px',
+        color: theme.text
+    };
+}
 </script>
 
 <style scoped>
@@ -102,23 +123,35 @@ const emit = defineEmits(['drag-start', 'manage-courses']);
 
 .course-card {
   cursor: grab;
+  /* Default border override */
+  border: 1px solid #e2e8f0;
+  transition: transform 0.2s;
+}
+
+.course-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.course-card :deep(.ant-card-body) {
+    padding: 12px;
 }
 
 .course-card-title {
   font-size: 16px;
   font-weight: 600;
+  margin-bottom: 4px;
 }
 
 .course-card-meta {
   display: flex;
   justify-content: space-between;
   font-size: 13px;
-  color: #5f6b7c;
+  opacity: 0.9;
 }
 
 .course-price {
   font-weight: 600;
-  color: #0f172a;
 }
 
 .empty-state {

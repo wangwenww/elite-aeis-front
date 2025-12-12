@@ -75,7 +75,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import { message } from 'ant-design-vue';
 import { PlusOutlined } from '@ant-design/icons-vue';
@@ -128,14 +128,23 @@ const fetchClasses = async () => {
   }
 };
 
-const showCreateModal = () => {
+const showCreateModal = async () => {
+  console.log('Opening create modal');
   modalTitle.value = '新建班级';
   isEditing.value = false;
   currentId.value = null;
+  
+  // Reset form
   formState.name = '';
   formState.grade_level = undefined;
   formState.status = 'active';
+  
   modalVisible.value = true;
+  
+  await nextTick();
+  if (formRef.value) {
+    formRef.value.clearValidate();
+  }
 };
 
 const editClass = (record) => {

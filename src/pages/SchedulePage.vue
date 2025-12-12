@@ -766,6 +766,29 @@ function editCourse(course) {
   courseModalOpen.value = true;
 }
 
+async function saveCourse() {
+  if (!courseForm.name || !courseForm.time) {
+    message.warning('请填写课程名称和上课时间');
+    return;
+  }
+
+  const payload = { ...courseForm };
+
+  try {
+    if (editingCourse.value) {
+      await http.put(`/api/courses/${editingCourse.value.id}`, payload);
+      message.success('课程更新成功');
+    } else {
+      await http.post('/api/courses', payload);
+      message.success('课程添加成功');
+    }
+    handleCourseModalHide();
+    await loadCourses();
+  } catch (error) {
+    message.error(`保存失败：${error.message}`);
+  }
+}
+
 function cancelEditCourse() {
   editingCourse.value = null;
   Object.assign(courseForm, {

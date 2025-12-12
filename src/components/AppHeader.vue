@@ -40,6 +40,7 @@
             <a-menu-item key="grade-entry">成绩录入</a-menu-item>
             <a-menu-item key="grade-analysis">成绩分析</a-menu-item>
             <a-menu-item key="photo-crop">照片裁剪</a-menu-item>
+            <a-menu-item key="payment-form">课程缴费单</a-menu-item>
           </a-sub-menu>
         </a-menu>
       </nav>
@@ -78,6 +79,7 @@ const routeKeyMap = {
   'student-grades': 'class-list',
   'student-grade-analysis': 'grade-analysis',
   'photo-crop': 'photo-crop',
+  'payment-form': 'payment-form',
 };
 
 const selectedKeys = computed(() => {

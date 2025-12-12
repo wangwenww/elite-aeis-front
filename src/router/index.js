@@ -134,6 +134,12 @@ const router = createRouter({
       component: PhotoCropPage,
       meta: { title: '照片裁剪工具' },
     },
+    {
+      path: '/payment-form',
+      name: 'payment-form',
+      component: () => import('../pages/payment/CoursePayment.vue'),
+      meta: { title: '课程缴费单' },
+    },
   ],
   scrollBehavior() {
     return { top: 0 };
