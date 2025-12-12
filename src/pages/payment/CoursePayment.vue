@@ -151,7 +151,8 @@ import dayjs from 'dayjs';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons-vue';
-import http from '../../api/http';
+import { studentApi } from '../../api/student';
+import { courseApi } from '../../api/course';
 import CourseLibrary from '../../components/schedule/CourseLibrary.vue';
 
 // Utility: Generate Receipt No
@@ -217,7 +218,8 @@ const formatAmount = (amount, currency = 'CNY') => {
 const fetchCourses = async () => {
   coursesLoading.value = true;
   try {
-    const { data } = await http.get('/api/courses');
+    const response = await courseApi.getCourses();
+    const data = response.data;
     courses.value = Array.isArray(data) ? data : [];
   } catch (error) {
     console.error('Failed to load courses:', error);

@@ -85,7 +85,6 @@ import {
 } from '@ant-design/icons-vue';
 import { marked } from 'marked';
 import * as wordNotesAPI from '../api/wordNotes.js';
-import http from '../api/http.js';
 
 const route = useRoute();
 const router = useRouter();

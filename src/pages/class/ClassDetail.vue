@@ -75,7 +75,7 @@ import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { message } from 'ant-design-vue';
 import { schoolApi } from '../../api/school';
-import http from '../../api/http'; // Assuming we can use http directly for student list or need a studentApi
+import { studentApi } from '../../api/student';
 
 const route = useRoute();
 const router = useRouter();
@@ -139,10 +139,10 @@ const fetchClassDetails = async () => {
 const fetchAllStudents = async () => {
   studentsLoading.value = true;
   try {
-    // Need a student listing API. Assuming /api/students exists from previous context
-    const res = await http.get('/api/students'); 
+    // Need a student listing API. Using studentApi.getStudents()
+    const res = await studentApi.getStudents();
     // Response format: { success: true, students: [...] } or just [...]
-    const list = res.data.students || res.data; 
+    const list = res.data.students || res.data;
     allStudentsOptions.value = list.map(s => ({
       label: `${s.name} (${s.student_id || 'No ID'})`,
       value: s.id

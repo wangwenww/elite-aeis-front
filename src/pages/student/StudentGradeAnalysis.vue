@@ -61,7 +61,8 @@
 import { ref, reactive, onMounted, watch, nextTick } from 'vue';
 import { message } from 'ant-design-vue';
 import { Line, Column } from '@antv/g2plot';
-import http from '../../api/http';
+import { studentApi } from '../../api/student';
+import { gradeApi } from '../../api/grade';
 
 const selectedStudentId = ref(undefined);
 const studentOptions = ref([]);
@@ -82,7 +83,7 @@ let paperChart = null;
 const loadStudents = async () => {
   studentsLoading.value = true;
   try {
-    const res = await http.get('/api/students');
+    const res = await studentApi.getStudents();
     const list = res.data.students || res.data;
     studentOptions.value = list.map(s => ({
       label: `${s.name} (${s.student_id || 'No ID'})`,
@@ -100,7 +101,7 @@ const loadGradeData = async () => {
   if (!selectedStudentId.value) return;
   
   try {
-    const res = await http.get(`/api/grades/student/${selectedStudentId.value}/analysis`);
+    const res = await gradeApi.getStudentGradesAnalysis(selectedStudentId.value);
     gradeData.value = res.data;
     
     // 等待 DOM 更新后渲染图表
@@ -127,7 +128,6 @@ const renderCharts = () => {
 // 渲染总分趋势图
 const renderTrendChart = () => {
   if (!trendChartRef.value || !gradeData.value || !gradeData.value.total_trend || gradeData.value.total_trend.length === 0) {
-    console.log('No trend data to render');
     return;
   }
   
@@ -147,7 +147,6 @@ const renderTrendChart = () => {
       value: item.total_score || 0
     }));
     
-    console.log('Rendering trend chart with data:', data);
     
     // 确保容器已挂载且有尺寸
     const container = trendChartRef.value;
@@ -191,7 +190,6 @@ const renderTrendChart = () => {
 // 渲染 Section A/B/C 图表
 const renderSectionChart = () => {
   if (!sectionChartRef.value || !gradeData.value || !gradeData.value.section_details || gradeData.value.section_details.length === 0) {
-    console.log('No section data to render');
     return;
   }
   
@@ -221,7 +219,6 @@ const renderSectionChart = () => {
       data.push({ name: item.paper_name, type: 'Section C', value: item.section_c || 0 });
     });
     
-    console.log('Rendering section chart with data:', data);
     
     sectionChart = new Column(container, {
       data,
@@ -247,7 +244,6 @@ const renderSectionChart = () => {
 // 渲染 Paper 1/2 图表
 const renderPaperChart = () => {
   if (!paperChartRef.value || !gradeData.value || !gradeData.value.paper_details || gradeData.value.paper_details.length === 0) {
-    console.log('No paper data to render');
     return;
   }
   
@@ -276,7 +272,6 @@ const renderPaperChart = () => {
       data.push({ name: item.paper_name, type: 'Paper 2', value: item.paper_2 || 0 });
     });
     
-    console.log('Rendering paper chart with data:', data);
     
     paperChart = new Column(container, {
       data,

@@ -3,6 +3,7 @@
  * 封装单词笔记相关的 API 调用
  */
 import http from './http.js';
+import { WORD_NOTES_API } from '../API_Interfaces';
 
 /**
  * 上传 PDF 并切片
@@ -15,11 +16,11 @@ export async function uploadPDF(classId, pdfFile) {
   formData.append('classId', classId);
   formData.append('pdfFile', pdfFile);
 
-  const response = await http.post('/api/word-notes/upload-pdf', formData, {
+  const response = await http.post(WORD_NOTES_API.UPLOAD_PDF, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
-    // 不设置超时，允许长时间处理（大模型接口可能需要较长时间）
+    timeout: 60000, // 文件上传可能需要较长时间
   });
 
   return response.data;
@@ -31,7 +32,7 @@ export async function uploadPDF(classId, pdfFile) {
  * @returns {Promise} 进度信息
  */
 export async function getProgress(taskId) {
-  const response = await http.get(`/api/word-notes/progress/${taskId}`);
+  const response = await http.get(WORD_NOTES_API.GET_PROGRESS(taskId));
   return response.data;
 }
 
@@ -40,7 +41,7 @@ export async function getProgress(taskId) {
  * @param {Object} params - 查询参数
  */
 export async function listJobs(params = {}) {
-  const response = await http.get('/api/word-notes/jobs', { params });
+  const response = await http.get(WORD_NOTES_API.LIST_JOBS, { params });
   return response.data;
 }
 
@@ -49,7 +50,7 @@ export async function listJobs(params = {}) {
  * @param {string} taskId - 任务ID
  */
 export async function getJobDetail(taskId) {
-  const response = await http.get(`/api/word-notes/jobs/${taskId}`);
+  const response = await http.get(WORD_NOTES_API.GET_JOB_DETAIL(taskId));
   return response.data;
 }
 
@@ -58,7 +59,7 @@ export async function getJobDetail(taskId) {
  * @param {string} taskId - 任务ID
  */
 export async function getDetailViewData(taskId) {
-  const response = await http.get(`/api/word-notes/jobs/${taskId}/detail-view`);
+  const response = await http.get(WORD_NOTES_API.GET_DETAIL_VIEW_DATA(taskId));
   return response.data;
 }
 

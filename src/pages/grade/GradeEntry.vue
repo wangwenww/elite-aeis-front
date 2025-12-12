@@ -113,7 +113,7 @@ import { ref, reactive, onMounted, watch } from 'vue';
 import { message } from 'ant-design-vue';
 import { RobotOutlined } from '@ant-design/icons-vue';
 import { gradeApi } from '../../api/grade';
-import http from '../../api/http';
+import { studentApi } from '../../api/student';
 
 const formRef = ref(null);
 const submitting = ref(false);
@@ -163,7 +163,7 @@ watch(() => formState.grade_type, (newType, oldType) => {
 const fetchAllStudents = async () => {
   studentsLoading.value = true;
   try {
-    const res = await http.get('/api/students');
+    const res = await studentApi.getStudents();
     const list = res.data.students || res.data;
     allStudentsOptions.value = list.map(s => ({
       label: `${s.name} (${s.student_id || 'No ID'})`,
@@ -181,12 +181,9 @@ const filterStudentOption = (input, option) => {
 };
 
 const handleSubmit = async () => {
-  console.log('handleSubmit called', formState);
   submitting.value = true;
   try {
-    console.log('Submitting grade:', formState);
     const result = await gradeApi.createGrade(formState);
-    console.log('Submit result:', result);
     message.success('成绩录入成功');
     // Reset form partially
     formState.paper_name = '';

@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import { message } from 'ant-design-vue';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import http from '../api/http';
+import { snapshotApi } from '../api/snapshot';
 
 function sumTotalsList(source = []) {
   const map = new Map();
@@ -69,7 +69,7 @@ export function useSnapshotMerge() {
     try {
       const responses = await Promise.all(
         ids.map(async (id) => {
-          const { data } = await http.get(`/api/schedule-snapshot-item/${id}`);
+          const { data } = await snapshotApi.getSnapshotItem(id);
           return data;
         }),
       );

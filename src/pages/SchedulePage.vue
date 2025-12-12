@@ -297,7 +297,9 @@ import { computed, onMounted, reactive, ref } from 'vue';
 import dayjs from 'dayjs';
 import { message } from 'ant-design-vue';
 import { InboxOutlined } from '@ant-design/icons-vue';
-import http from '../api/http';
+import { scheduleApi } from '../api/schedule';
+import { studentApi } from '../api/student';
+import { courseApi } from '../api/course';
 import ScheduleToolbar from '../components/schedule/ScheduleToolbar.vue';
 import CourseLibrary from '../components/schedule/CourseLibrary.vue';
 import ScheduleCalendar from '../components/schedule/ScheduleCalendar.vue';
@@ -711,7 +713,7 @@ function handleMonthChange(value) {
 
 async function loadStudents() {
   try {
-    const { data } = await http.get('/api/students');
+    const { data } = await studentApi.getStudents();
     students.value = data.students || [];
     if (!students.value.length) {
       message.warning('暂无学生数据，请先在后端维护学生');
@@ -724,8 +726,8 @@ async function loadStudents() {
 async function loadCourses() {
   coursesLoading.value = true;
   try {
-    const { data } = await http.get('/api/courses');
-    courses.value = Array.isArray(data) ? data : [];
+    const response = await courseApi.getCourses();
+    courses.value = Array.isArray(response.data) ? response.data : [];
   } catch (error) {
     message.error(`加载课程失败：${error.message}`);
   } finally {
@@ -749,7 +751,7 @@ async function saveSnapshot() {
   };
 
   try {
-    await http.post('/api/schedule-snapshots/save', payload);
+    await scheduleApi.saveSnapshot(payload);
     isDirty.value = false;
     message.success('课表已保存（已生成新快照）');
   } catch (error) {
@@ -776,10 +778,10 @@ async function saveCourse() {
 
   try {
     if (editingCourse.value) {
-      await http.put(`/api/courses/${editingCourse.value.id}`, payload);
+      await courseApi.updateCourse(editingCourse.value.id, payload);
       message.success('课程更新成功');
     } else {
-      await http.post('/api/courses', payload);
+      await courseApi.createCourse(payload);
       message.success('课程添加成功');
     }
     handleCourseModalHide();
@@ -808,7 +810,7 @@ function handleCourseModalHide() {
 
 async function deleteCourse(courseId) {
   try {
-    await http.delete(`/api/courses/${courseId}`);
+    await courseApi.deleteCourse(courseId);
     message.success('课程删除成功');
     await loadCourses();
   } catch (error) {

@@ -88,7 +88,7 @@
 <script setup>
 import { reactive, ref } from 'vue';
 import { message } from 'ant-design-vue';
-import http from '../../api/http';
+import { inquiryApi } from '../../api/inquiry';
 
 const form = reactive({
   name: '',
@@ -106,7 +106,7 @@ const handleSubmit = async () => {
 
   loading.value = true;
   try {
-    await http.post('/api/inquiries', {
+    await inquiryApi.submitInquiry({
       name: form.name,
       phone: form.contact,
       message: form.message,

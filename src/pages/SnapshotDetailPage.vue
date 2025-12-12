@@ -251,7 +251,9 @@ import { computed, nextTick, onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import dayjs from 'dayjs';
 import { message } from 'ant-design-vue';
-import http from '../api/http';
+import { studentApi } from '../api/student';
+import { courseApi } from '../api/course';
+import { snapshotApi } from '../api/snapshot';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
@@ -458,7 +460,7 @@ function ensureCourseTimes(courseStats) {
 
 async function fetchSnapshot() {
   try {
-    const { data } = await http.get(`/api/schedule-snapshot-item/${snapshotId}`);
+    const { data } = await snapshotApi.getSnapshotItem(snapshotId);
     snapshotInfo.value = data;
 
     Object.keys(lessonsMap).forEach((key) => delete lessonsMap[key]);

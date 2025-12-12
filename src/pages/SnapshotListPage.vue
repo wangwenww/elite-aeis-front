@@ -130,7 +130,8 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useRouter } from 'vue-router';
 import { message, Modal } from 'ant-design-vue';
-import http from '../api/http';
+import { studentApi } from '../api/student';
+import { snapshotApi } from '../api/snapshot';
 import SelectedSnapshotsBar from '../components/snapshot/SelectedSnapshotsBar.vue';
 
 const router = useRouter();
@@ -279,7 +280,7 @@ function goToMerge() {
 
 async function loadStudents() {
   try {
-    const { data } = await http.get('/api/students');
+    const { data } = await studentApi.getStudents();
     studentOptions.value = (data.students || []).map((item) => ({ label: item.name, value: item.id }));
   } catch (error) {
     message.error(`加载学生列表失败：${error.message}`);
@@ -296,7 +297,8 @@ async function loadSnapshots() {
     if (filters.studentId) params.student_id = filters.studentId;
     if (filters.yearMonth) params.year_month = filters.yearMonth.format('YYYY-MM');
 
-    const { data } = await http.get('/api/schedule-snapshots', { params });
+    const response = await snapshotApi.getSnapshots(params);
+    const data = response.data;
     snapshots.value = (data.items || []).map((item) => ({
       ...item,
     }));
@@ -347,7 +349,7 @@ function confirmDelete(record) {
     cancelText: '取消',
     async onOk() {
       try {
-        await http.delete(`/api/schedule-snapshots/${record.id}`);
+        await snapshotApi.deleteSnapshot(record.id);
         message.success('快照已删除');
         loadSnapshots();
       } catch (error) {

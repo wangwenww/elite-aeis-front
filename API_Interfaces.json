@@ -1,0 +1,92 @@
+{
+  "Common": {
+    "upload_image": "POST /api/upload-image"
+  },
+  "Questions": {
+    "list": "GET /api/questions",
+    "detail": "GET /api/questions/{question_id}",
+    "update": "PUT /api/questions/{question_id}",
+    "verify": "POST /api/questions/{question_id}/verify",
+    "get_image": "GET /api/questions/{question_id}/image/{image_index}"
+  },
+  "Papers": {
+    "upload": "POST /api/papers/upload",
+    "list": "GET /api/papers",
+    "detail": "GET /api/papers/{paper_id}"
+  },
+  "Knowledge": {
+    "list": "GET /api/knowledge-points",
+    "create": "POST /api/knowledge-points",
+    "update": "PUT /api/knowledge-points/{kp_id}",
+    "delete": "DELETE /api/knowledge-points/{kp_id}"
+  },
+  "Courses": {
+    "list": "GET /api/courses",
+    "detail": "GET /api/courses/{course_id}",
+    "create": "POST /api/courses",
+    "update": "PUT /api/courses/{course_id}",
+    "delete": "DELETE /api/courses/{course_id}"
+  },
+  "ExtraExpenses": {
+    "list": "GET /api/extra-expenses",
+    "create": "POST /api/extra-expenses",
+    "update": "PUT /api/extra-expenses/{expense_id}",
+    "delete": "DELETE /api/extra-expenses/{expense_id}"
+  },
+  "Schedules": {
+    "list": "GET /api/schedules",
+    "detail": "GET /api/schedules/{schedule_id}",
+    "create": "POST /api/schedules",
+    "batch_create": "POST /api/schedules/batch",
+    "update": "PUT /api/schedules/{schedule_id}",
+    "delete": "DELETE /api/schedules/{schedule_id}"
+  },
+  "Snapshots": {
+    "get_by_student_month": "GET /api/schedule-snapshots/{student_id}/{year_month}",
+    "get_by_id": "GET /api/schedule-snapshot-item/{snapshot_id}",
+    "export_pdf": "GET /api/schedule-snapshot-item/{snapshot_id}/export-pdf",
+    "create": "POST /api/schedule-snapshots",
+    "update": "PUT /api/schedule-snapshots/{snapshot_id}",
+    "delete": "DELETE /api/schedule-snapshots/{snapshot_id}",
+    "list": "GET /api/schedule-snapshots",
+    "save": "POST /api/schedule-snapshots/save",
+    "statistics": "GET /api/schedule-snapshots/statistics/{student_id}/{year_month}"
+  },
+  "Students": {
+    "list": "GET /api/students",
+    "create": "POST /api/students"
+  },
+  "Inquiries": {
+    "create": "POST /api/inquiries",
+    "detail": "GET /api/inquiries/{inquiry_id}",
+    "list": "GET /api/inquiries"
+  },
+  "WordNotes": {
+    "upload_pdf": "POST /api/word-notes/upload-pdf",
+    "get_progress": "GET /api/word-notes/progress/{taskId}",
+    "list_jobs": "GET /api/word-notes/jobs",
+    "get_job_detail": "GET /api/word-notes/jobs/{taskId}",
+    "get_page_image": "GET /api/word-notes/pages/{taskId}/{pageIndex}",
+    "get_markdown": "GET /api/word-notes/jobs/{taskId}/markdown",
+    "get_detail_view": "GET /api/word-notes/jobs/{taskId}/detail-view"
+  },
+  "School": {
+    "list_classes": "GET /api/classes",
+    "get_class": "GET /api/classes/{class_id}",
+    "create_class": "POST /api/classes",
+    "update_class": "PUT /api/classes/{class_id}",
+    "delete_class": "DELETE /api/classes/{class_id}",
+    "add_student": "POST /api/classes/{class_id}/students/{student_id}",
+    "remove_student": "DELETE /api/classes/{class_id}/students/{student_id}"
+  },
+  "Grades": {
+    "create": "POST /api/grades",
+    "by_student": "GET /api/grades/student/{student_id}",
+    "by_paper": "GET /api/grades/paper",
+    "parse_text": "POST /api/grades/parse-natural-language",
+    "analysis": "GET /api/grades/student/{student_id}/analysis"
+  },
+  "Statistics": {
+    "get": "GET /api/statistics"
+  }
+}

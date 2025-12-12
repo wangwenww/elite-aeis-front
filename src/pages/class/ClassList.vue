@@ -129,7 +129,6 @@ const fetchClasses = async () => {
 };
 
 const showCreateModal = async () => {
-  console.log('Opening create modal');
   modalTitle.value = '新建班级';
   isEditing.value = false;
   currentId.value = null;
