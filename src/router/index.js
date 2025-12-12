@@ -15,6 +15,7 @@ const GradeEntryPage = () => import('../pages/grade/GradeEntry.vue');
 const StudentGradesPage = () => import('../pages/student/StudentGrades.vue');
 const StudentListPage = () => import('../pages/student/StudentList.vue');
 const StudentGradeAnalysisPage = () => import('../pages/student/StudentGradeAnalysis.vue');
+const PhotoCropPage = () => import('../pages/PhotoCropPage.vue');
 
 const router = createRouter({
   history: createWebHistory(),
@@ -126,6 +127,12 @@ const router = createRouter({
       name: 'student-grade-analysis',
       component: StudentGradeAnalysisPage,
       meta: { title: '成绩分析' },
+    },
+    {
+      path: '/photo-crop',
+      name: 'photo-crop',
+      component: PhotoCropPage,
+      meta: { title: '照片裁剪工具' },
     },
   ],
   scrollBehavior() {

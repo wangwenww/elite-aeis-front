@@ -31,6 +31,14 @@ export default {
           800: '#1e293b',
           900: '#0f172a',
         },
+        elite: {
+          grey: '#F5F5F7',
+          ivory: '#FAFAF9',
+          ink: '#0F172A',
+          black: '#0A0A0A',
+          gold: '#C5A059',
+          'gold-light': '#E5C079',
+        },
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
