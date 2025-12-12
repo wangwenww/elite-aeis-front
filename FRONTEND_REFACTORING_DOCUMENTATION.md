@@ -32,7 +32,16 @@ src/
 │   └── snapshot/          # 快照相关组件
 ├── composables/           # Vue 组合式 API
 ├── config/                # 配置文件
-├── pages/                 # 页面目录（保持原有结构）
+├── pages/                 # 页面目录
+│   ├── class/             # 班级相关页面
+│   ├── grade/             # 成绩相关页面
+│   ├── home/              # 首页相关页面
+│   ├── payment/           # 支付相关页面
+│   ├── schedule/          # 课表相关页面
+│   ├── snapshot/          # 快照相关页面
+│   ├── student/           # 学生相关页面
+│   ├── utils/             # 工具相关页面
+│   └── wordnotes/         # 单词笔记相关页面
 ├── services/              # 服务层（新创建）
 ├── types/                 # 类型定义
 │   ├── courseTypes.js     # 课程类型定义
@@ -205,6 +214,12 @@ await studentApi.createStudent({
 - 优先使用现有的公共组件
 - 对于可复用的 UI 元素，考虑提取到 `components/common` 目录
 - 遵循单一职责原则
+
+### 6.3 页面组织
+
+- 按功能模块组织页面，将相关页面放入对应的功能目录
+- 保持页面路径与路由配置的一致性
+- 新增页面时应归类到相应的功能目录中
 
 ## 7. 总结
 

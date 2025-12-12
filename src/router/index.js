@@ -1,21 +1,21 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-const SchedulePage = () => import('../pages/SchedulePage.vue');
-const SnapshotListPage = () => import('../pages/SnapshotListPage.vue');
-const SnapshotDetailPage = () => import('../pages/SnapshotDetailPage.vue');
-const SnapshotMergePage = () => import('../pages/SnapshotMergePage.vue');
-const EliteHomePage = () => import('../pages/EliteHomePage.vue');
-const GeometryLessonPage = () => import('../pages/GeometryLessonPage.vue');
-const WordNoteProcessPage = () => import('../pages/WordNoteProcessPage.vue');
-const WordNoteJobsPage = () => import('../pages/WordNoteJobsPage.vue');
-const WordNoteDetailPage = () => import('../pages/WordNoteDetailPage.vue');
+const SchedulePage = () => import('../pages/schedule/SchedulePage.vue');
+const SnapshotListPage = () => import('../pages/snapshot/SnapshotListPage.vue');
+const SnapshotDetailPage = () => import('../pages/snapshot/SnapshotDetailPage.vue');
+const SnapshotMergePage = () => import('../pages/snapshot/SnapshotMergePage.vue');
+const EliteHomePage = () => import('../pages/home/EliteHomePage.vue');
+const GeometryLessonPage = () => import('../pages/utils/GeometryLessonPage.vue');
+const WordNoteProcessPage = () => import('../pages/wordnotes/WordNoteProcessPage.vue');
+const WordNoteJobsPage = () => import('../pages/wordnotes/WordNoteJobsPage.vue');
+const WordNoteDetailPage = () => import('../pages/wordnotes/WordNoteDetailPage.vue');
 const ClassListPage = () => import('../pages/class/ClassList.vue');
 const ClassDetailPage = () => import('../pages/class/ClassDetail.vue');
 const GradeEntryPage = () => import('../pages/grade/GradeEntry.vue');
 const StudentGradesPage = () => import('../pages/student/StudentGrades.vue');
 const StudentListPage = () => import('../pages/student/StudentList.vue');
 const StudentGradeAnalysisPage = () => import('../pages/student/StudentGradeAnalysis.vue');
-const PhotoCropPage = () => import('../pages/PhotoCropPage.vue');
+const PhotoCropPage = () => import('../pages/utils/PhotoCropPage.vue');
 
 const router = createRouter({
   history: createWebHistory(),
