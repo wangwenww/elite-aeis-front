@@ -155,7 +155,7 @@ import { message } from 'ant-design-vue';
 import { onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import dayjs from 'dayjs';
-import { useWordNotesJobs } from '../composables/useWordNotesJobs.js';
+import { useWordNotesJobs } from '../../composables/useWordNotesJobs.js';
 
 const route = useRoute();
 const router = useRouter();

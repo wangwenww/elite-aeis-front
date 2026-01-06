@@ -11,13 +11,13 @@
 </template>
 
 <script setup>
-import HeroSection from '../components/home/HeroSection.vue';
-import ProgramsSection from '../components/home/ProgramsSection.vue';
-import AchievementsSection from '../components/home/AchievementsSection.vue';
-import TestimonialsSection from '../components/home/TestimonialsSection.vue';
-import TeachersSection from '../components/home/TeachersSection.vue';
-import ContactSection from '../components/home/ContactSection.vue';
-import FooterSection from '../components/home/FooterSection.vue';
+import HeroSection from '../../components/home/HeroSection.vue';
+import ProgramsSection from '../../components/home/ProgramsSection.vue';
+import AchievementsSection from '../../components/home/AchievementsSection.vue';
+import TestimonialsSection from '../../components/home/TestimonialsSection.vue';
+import TeachersSection from '../../components/home/TeachersSection.vue';
+import ContactSection from '../../components/home/ContactSection.vue';
+import FooterSection from '../../components/home/FooterSection.vue';
 </script>
 
 <style scoped>

@@ -297,15 +297,15 @@ import { computed, onMounted, reactive, ref } from 'vue';
 import dayjs from 'dayjs';
 import { message } from 'ant-design-vue';
 import { InboxOutlined } from '@ant-design/icons-vue';
-import { scheduleApi } from '../api/schedule';
-import { studentApi } from '../api/student';
-import { courseApi } from '../api/course';
-import ScheduleToolbar from '../components/schedule/ScheduleToolbar.vue';
-import CourseLibrary from '../components/schedule/CourseLibrary.vue';
-import ScheduleCalendar from '../components/schedule/ScheduleCalendar.vue';
-import StatisticsPanel from '../components/schedule/StatisticsPanel.vue';
-import ExtraExpensePanel from '../components/schedule/ExtraExpensePanel.vue';
-import { useScheduleEditor, generateUid } from '../composables/useScheduleEditor.js';
+import { scheduleApi } from '../../api/schedule';
+import { studentApi } from '../../api/student';
+import { courseApi } from '../../api/course';
+import ScheduleToolbar from '../../components/schedule/ScheduleToolbar.vue';
+import CourseLibrary from '../../components/schedule/CourseLibrary.vue';
+import ScheduleCalendar from '../../components/schedule/ScheduleCalendar.vue';
+import StatisticsPanel from '../../components/schedule/StatisticsPanel.vue';
+import ExtraExpensePanel from '../../components/schedule/ExtraExpensePanel.vue';
+import { useScheduleEditor, generateUid } from '../../composables/useScheduleEditor.js';
 
 const {
   selectedMonth,

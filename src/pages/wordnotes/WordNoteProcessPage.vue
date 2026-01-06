@@ -133,7 +133,7 @@ import { ref, onUnmounted } from 'vue';
 import { message } from 'ant-design-vue';
 import { InboxOutlined } from '@ant-design/icons-vue';
 import { useRouter } from 'vue-router';
-import { useWordNotes } from '../composables/useWordNotes.js';
+import { useWordNotes } from '../../composables/useWordNotes.js';
 
 const {
   currentStep,

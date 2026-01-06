@@ -166,7 +166,6 @@
               <p>课程缴费单</p>
             </div>
             <div class="invoice-meta">
-              <div><span>Invoice Serial：</span>{{ invoiceNumber }}</div>
               <div><span>Issue Date：</span>{{ formatDate(snapshotInfo.created_at, 'YYYY-MM-DD') }}</div>
             </div>
           </div>
@@ -251,9 +250,9 @@ import { computed, nextTick, onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import dayjs from 'dayjs';
 import { message } from 'ant-design-vue';
-import { studentApi } from '../api/student';
-import { courseApi } from '../api/course';
-import { snapshotApi } from '../api/snapshot';
+import { studentApi } from '../../api/student';
+import { courseApi } from '../../api/course';
+import { snapshotApi } from '../../api/snapshot';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
@@ -261,7 +260,7 @@ const route = useRoute();
 const router = useRouter();
 const snapshotId = route.params.id;
 
-const logoUrl = new URL('../assets/elite-logo.png', import.meta.url).href;
+const logoUrl = new URL('../../assets/elite-logo.png', import.meta.url).href;
 
 const snapshotInfo = ref(null);
 const lessonsMap = reactive({});
@@ -976,11 +975,12 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-  padding: 28px 36px;
+  background: #ffffff;
+  padding: 24px 36px 18px;
   border-radius: 16px 16px 0 0;
-  color: #ffffff;
-  margin: 0 -56px 28px;
+  color: #1E293B;
+  margin: 0 -56px 20px;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .invoice-header-left {
@@ -991,6 +991,16 @@ onMounted(() => {
 .invoice-header-right {
   flex: 1;
   text-align: right;
+}
+
+.invoice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding-bottom: 10px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .invoice-logo {
@@ -1019,7 +1029,7 @@ onMounted(() => {
   justify-content: space-between;
   font-size: 14px;
   color: #475569;
-  margin-top: 12px;
+  margin-top: 4px;
 }
 
 .invoice-section {

@@ -84,7 +84,7 @@ import {
   RightOutlined,
 } from '@ant-design/icons-vue';
 import { marked } from 'marked';
-import * as wordNotesAPI from '../api/wordNotes.js';
+import * as wordNotesAPI from '../../api/wordNotes.js';
 
 const route = useRoute();
 const router = useRouter();

@@ -56,20 +56,15 @@
               <img :src="logoUrl" alt="Elite Edu Logo" class="invoice-logo" />
             </div>
             <div class="invoice-header-right">
-              <div class="invoice-title">Elite Edu</div>
+              <div class="invoice-title">ELITE EDU</div>
               <div class="invoice-subtitle">Tuition</div>
             </div>
           </div>
 
           <div class="invoice-meta-header">
             <div>
-              <h2>费用清单总计</h2>
-              <p>账期：{{ monthSummary || '—' }}</p>
-            </div>
-            <div class="invoice-meta-list">
-              <span>学生：{{ studentNames.join('、') || '—' }}</span>
-<!--              <span>生成时间：{{ formatDate(new Date()) }}</span>-->
-<!--              <span>快照数量：{{ snapshots.length }}</span>-->
+              <h1>School Fee Invoice / 课程缴费单</h1>
+              <p>账期：{{ monthSummary || '—' }} · 学生：{{ studentNames.join('、') || '—' }}</p>
             </div>
           </div>
 
@@ -135,7 +130,7 @@
                   </div>
                 </div>
 
-                <div class="extra-section">
+                <div class="extra-section" ref="expenseSection">
                   <h4>额外费用</h4>
                   <table class="invoice-table">
                     <thead>
@@ -164,6 +159,69 @@
                     </tbody>
                   </table>
                 </div>
+
+                <section class="invoice-block schedule-section-block" :ref="el => calendarSections[snapshot.id] = el">
+                  <header class="block-header">
+                    <h3>课程日历</h3>
+                  </header>
+                  <div class="calendar-grid">
+                    <div class="calendar-header" v-for="dayLabel in ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']" :key="dayLabel">
+                      {{ dayLabel }}
+                    </div>
+                    <template v-for="(week, wIndex) in buildCalendarWeeks(snapshot)" :key="`week-${wIndex}`">
+                      <div
+                        v-for="day in week"
+                        :key="`${day.date}-${day.display}`"
+                        class="calendar-cell"
+                        :class="{ 'is-other-month': !day.inMonth }"
+                      >
+                        <div class="cell-header">
+                          <span class="cell-date">{{ day.display }}</span>
+                          <span class="cell-weekday">{{ day.weekday }}</span>
+                        </div>
+                        <div v-if="day.lessons && day.lessons.length" class="cell-lessons">
+                          <div 
+                            v-for="lesson in day.lessons" 
+                            :key="lesson.uid || `${lesson.course_name}-${lesson.course_time}`" 
+                            class="lesson-pill"
+                            :class="`course-color-${getCourseColor(lesson.course_css_class)}`"
+                          >
+                            <strong>{{ lesson.course_name || '课程' }}</strong>
+                            <span>{{ lesson.course_time || '时间待定' }}</span>
+                          </div>
+                        </div>
+                        <div v-else class="cell-empty">无课程</div>
+                      </div>
+                    </template>
+                  </div>
+                </section>
+
+                <section class="invoice-block schedule-table-block" :ref="el => tableSections[snapshot.id] = el">
+                  <header class="block-header">
+                    <h3>课程表（表格）</h3>
+                  </header>
+                  <table class="schedule-table">
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Day</th>
+                        <th>Timeslot</th>
+                        <th>Content</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="row in buildLessonRows(snapshot)" :key="`${row.date}-${row.time}-${row.content}`">
+                        <td>{{ row.date }}</td>
+                        <td>{{ row.day }}</td>
+                        <td>{{ row.time }}</td>
+                        <td>{{ row.content }}</td>
+                      </tr>
+                      <tr v-if="!buildLessonRows(snapshot).length">
+                        <td colspan="4" class="empty-cell">本月暂无课程记录</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </section>
               </div>
             </section>
 
@@ -253,19 +311,24 @@
 
 <script setup>
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import dayjs from 'dayjs';
 import { useRoute, useRouter } from 'vue-router';
 import { message } from 'ant-design-vue';
-import MergedSnapshotHeader from '../components/snapshot/MergedSnapshotHeader.vue';
-import MergedMonthSection from '../components/snapshot/MergedMonthSection.vue';
-import TemporaryAdjustmentsPanel from '../components/snapshot/TemporaryAdjustmentsPanel.vue';
-import MergedTotalsPanel from '../components/snapshot/MergedTotalsPanel.vue';
-import { useSnapshotMerge } from '../composables/useSnapshotMerge';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import MergedSnapshotHeader from '../../components/snapshot/MergedSnapshotHeader.vue';
+import MergedMonthSection from '../../components/snapshot/MergedMonthSection.vue';
+import TemporaryAdjustmentsPanel from '../../components/snapshot/TemporaryAdjustmentsPanel.vue';
+import MergedTotalsPanel from '../../components/snapshot/MergedTotalsPanel.vue';
+import { useSnapshotMerge } from '../../composables/useSnapshotMerge';
 
 const route = useRoute();
 const router = useRouter();
 const previewVisible = ref(false);
 const invoicePreviewRef = ref(null);
-const logoUrl = new URL('../assets/elite-logo.png', import.meta.url).href;
+const logoUrl = new URL('../../assets/elite-logo.png', import.meta.url).href;
+const calendarSections = ref({});
+const tableSections = ref({});
 
 const {
   snapshots,
@@ -402,10 +465,137 @@ async function handleExportPreview() {
     message.error('预览内容尚未准备就绪，请稍后再试');
     return;
   }
-  await nextTick();
-  const months = monthSummary.value || '账单';
-  const filename = `合并账单_${months.replace(/、/g, '_')}.pdf`;
-  await exportMergedPdf(invoicePreviewRef.value, filename);
+  
+  exporting.value = true;
+  try {
+    await nextTick();
+    
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const scale = 2;
+    
+    // 1. 渲染费用明细（不包含日历和表格）
+    const mainContent = invoicePreviewRef.value.cloneNode(true);
+    
+    // 移除日历和表格区块
+    const calendars = mainContent.querySelectorAll('.schedule-section-block');
+    const tables = mainContent.querySelectorAll('.schedule-table-block');
+    calendars.forEach(el => el.remove());
+    tables.forEach(el => el.remove());
+    
+    // 临时添加到 DOM
+    mainContent.style.position = 'absolute';
+    mainContent.style.left = '-9999px';
+    document.body.appendChild(mainContent);
+    
+    const mainCanvas = await html2canvas(mainContent, {
+      scale,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      logging: false,
+    });
+    
+    document.body.removeChild(mainContent);
+    
+    // 添加费用明细页面
+    const mainImgData = mainCanvas.toDataURL('image/png');
+    const mainImgWidth = pageWidth;
+    const mainImgHeight = (mainCanvas.height * pageWidth) / mainCanvas.width;
+    
+    let heightLeft = mainImgHeight;
+    let position = 0;
+    
+    pdf.addImage(mainImgData, 'PNG', 0, position, mainImgWidth, mainImgHeight, undefined, 'FAST');
+    heightLeft -= pageHeight;
+    
+    while (heightLeft > 0) {
+      position = heightLeft - mainImgHeight;
+      pdf.addPage();
+      pdf.addImage(mainImgData, 'PNG', 0, position, mainImgWidth, mainImgHeight, undefined, 'FAST');
+      heightLeft -= pageHeight;
+    }
+    
+    // 2. 渲染每个快照的课程日历和表格
+    for (const snapshot of snapshots.value) {
+      const calendarEl = calendarSections.value[snapshot.id];
+      const tableEl = tableSections.value[snapshot.id];
+      
+      // 渲染日历
+      if (calendarEl) {
+        pdf.addPage();
+        const calendarCanvas = await html2canvas(calendarEl, {
+          scale,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+        });
+        
+        const calImgData = calendarCanvas.toDataURL('image/png');
+        const calImgWidth = pageWidth;
+        const calImgHeight = (calendarCanvas.height * pageWidth) / calendarCanvas.width;
+        
+        if (calImgHeight <= pageHeight) {
+          pdf.addImage(calImgData, 'PNG', 0, 0, calImgWidth, calImgHeight, undefined, 'FAST');
+        } else {
+          // 如果日历超过一页，自动分页
+          let calHeightLeft = calImgHeight;
+          let calPosition = 0;
+          pdf.addImage(calImgData, 'PNG', 0, calPosition, calImgWidth, calImgHeight, undefined, 'FAST');
+          calHeightLeft -= pageHeight;
+          
+          while (calHeightLeft > 0) {
+            calPosition = calHeightLeft - calImgHeight;
+            pdf.addPage();
+            pdf.addImage(calImgData, 'PNG', 0, calPosition, calImgWidth, calImgHeight, undefined, 'FAST');
+            calHeightLeft -= pageHeight;
+          }
+        }
+      }
+      
+      // 渲染表格
+      if (tableEl) {
+        pdf.addPage();
+        const tableCanvas = await html2canvas(tableEl, {
+          scale,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+        });
+        
+        const tblImgData = tableCanvas.toDataURL('image/png');
+        const tblImgWidth = pageWidth;
+        const tblImgHeight = (tableCanvas.height * pageWidth) / tableCanvas.width;
+        
+        if (tblImgHeight <= pageHeight) {
+          pdf.addImage(tblImgData, 'PNG', 0, 0, tblImgWidth, tblImgHeight, undefined, 'FAST');
+        } else {
+          // 如果表格超过一页，自动分页
+          let tblHeightLeft = tblImgHeight;
+          let tblPosition = 0;
+          pdf.addImage(tblImgData, 'PNG', 0, tblPosition, tblImgWidth, tblImgHeight, undefined, 'FAST');
+          tblHeightLeft -= pageHeight;
+          
+          while (tblHeightLeft > 0) {
+            tblPosition = tblHeightLeft - tblImgHeight;
+            pdf.addPage();
+            pdf.addImage(tblImgData, 'PNG', 0, tblPosition, tblImgWidth, tblImgHeight, undefined, 'FAST');
+            tblHeightLeft -= pageHeight;
+          }
+        }
+      }
+    }
+    
+    const months = monthSummary.value || '账单';
+    const filename = `合并账单_${months.replace(/、/g, '_')}.pdf`;
+    pdf.save(filename);
+    message.success('PDF 导出成功');
+  } catch (error) {
+    console.error(error);
+    message.error(`导出失败：${error?.message || '未知错误'}`);
+  } finally {
+    exporting.value = false;
+  }
 }
 
 function formatDate(value) {
@@ -429,6 +619,75 @@ function deriveCourseTime(snapshot, course) {
     }
   }
   return '—';
+}
+
+function buildCalendarWeeks(snapshot) {
+  if (!snapshot?.year_month) return [];
+  const base = dayjs(`${snapshot.year_month}-01`);
+  if (!base.isValid()) return [];
+
+  const firstDay = base.startOf('month');
+  const lastDay = base.endOf('month');
+  const start = firstDay.startOf('week');
+  const end = lastDay.endOf('week');
+
+  const lessonsMap = snapshot?.schedule_data?.lessons || {};
+  const weeks = [];
+  let cursor = start;
+  let currentWeek = [];
+
+  while (cursor.isBefore(end) || cursor.isSame(end, 'day')) {
+    const dateKey = cursor.format('YYYY-MM-DD');
+    const lessons = lessonsMap[dateKey] || [];
+    currentWeek.push({
+      date: dateKey,
+      inMonth: cursor.isSame(base, 'month'),
+      display: cursor.format('D'),
+      weekday: cursor.format('dddd'),
+      lessons,
+    });
+
+    if (currentWeek.length === 7) {
+      weeks.push(currentWeek);
+      currentWeek = [];
+    }
+    cursor = cursor.add(1, 'day');
+  }
+
+  return weeks;
+}
+
+function buildLessonRows(snapshot) {
+  const lessonsMap = snapshot?.schedule_data?.lessons || {};
+  const rows = [];
+  Object.entries(lessonsMap).forEach(([dateStr, items]) => {
+    if (!Array.isArray(items)) return;
+    items.forEach((lesson) => {
+      rows.push({
+        date: dayjs(dateStr).isValid() ? dayjs(dateStr).format('YYYYMMDD') : dateStr,
+        day: dayjs(dateStr).isValid() ? dayjs(dateStr).format('dddd') : '—',
+        time: lesson?.course_time || '—',
+        content: lesson?.course_name || '未命名课程',
+      });
+    });
+  });
+
+  rows.sort((a, b) => {
+    if (a.date === b.date) return (a.time || '').localeCompare(b.time || '');
+    return a.date.localeCompare(b.date);
+  });
+  return rows;
+}
+
+function getCourseColor(cssClass) {
+  const map = {
+    blue: 'blue',
+    green: 'green',
+    orange: 'orange',
+    pink: 'pink',
+    purple: 'purple',
+  };
+  return map[cssClass] || 'blue';
 }
 </script>
 
@@ -488,6 +747,7 @@ function deriveCourseTime(snapshot, course) {
   gap: 20px;
 }
 
+
 .invoice-sheet {
   width: 794px;
   margin: 0 auto;
@@ -502,16 +762,17 @@ function deriveCourseTime(snapshot, course) {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
   border-radius: 12px;
   padding: 24px 28px;
-  color: #ffffff;
+  color: #1E293B;
   margin-bottom: 28px;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
 .invoice-logo {
   height: 50px;
+  filter: none;
 }
 
 .invoice-title {
@@ -519,44 +780,34 @@ function deriveCourseTime(snapshot, course) {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  color: #1E293B;
 }
 
 .invoice-subtitle {
   font-size: 14px;
-  opacity: 0.9;
+  color: #64748B;
   margin-top: 4px;
 }
 
+
 .invoice-meta-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
   margin-bottom: 28px;
   padding-bottom: 20px;
   border-bottom: 2px solid #e2e8f0;
+  text-align: center;
 }
 
-.invoice-meta-header h2 {
-  margin: 0;
-  font-size: 26px;
+.invoice-meta-header h1 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
   font-weight: 700;
   color: #1E293B;
-  letter-spacing: -0.02em;
 }
 
 .invoice-meta-header p {
-  margin: 6px 0 0;
+  margin: 0;
   color: #64748B;
   font-size: 14px;
-}
-
-.invoice-meta-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  font-size: 14px;
-  color: #64748B;
 }
 
 .invoice-body {
@@ -664,6 +915,181 @@ function deriveCourseTime(snapshot, course) {
   font-style: italic;
   padding: 12px;
   font-size: 12px;
+}
+
+.schedule-section-block {
+  margin-top: 32px;
+  page-break-before: always;
+  break-before: page;
+  padding-top: 40px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.calendar-header {
+  background: #f1f5f9;
+  padding: 10px 12px;
+  font-weight: 600;
+  text-align: center;
+  border-right: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.calendar-header:nth-child(7n) {
+  border-right: none;
+}
+
+.calendar-cell {
+  min-height: 110px;
+  border-right: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: #fff;
+}
+
+.calendar-cell:nth-child(7n) {
+  border-right: none;
+}
+
+.calendar-cell.is-other-month {
+  background: #f8fafc;
+  color: #94a3b8;
+}
+
+.cell-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.cell-date {
+  font-weight: 700;
+}
+
+.cell-weekday {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.cell-lessons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lesson-pill {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+}
+
+.lesson-pill strong {
+  font-size: 13px;
+}
+
+.lesson-pill.course-color-blue {
+  background: #dbeafe;
+  border-color: #3b82f6;
+  color: #1e40af;
+}
+
+.lesson-pill.course-color-green {
+  background: #d1fae5;
+  border-color: #10b981;
+  color: #065f46;
+}
+
+.lesson-pill.course-color-orange {
+  background: #fed7aa;
+  border-color: #f97316;
+  color: #9a3412;
+}
+
+.lesson-pill.course-color-pink {
+  background: #fce7f3;
+  border-color: #ec4899;
+  color: #9f1239;
+}
+
+.lesson-pill.course-color-purple {
+  background: #e9d5ff;
+  border-color: #a855f7;
+  color: #6b21a8;
+}
+
+.cell-empty {
+  color: #cbd5e1;
+  font-size: 12px;
+}
+
+.schedule-table-block {
+  margin-top: 32px;
+  page-break-before: always;
+  break-before: page;
+  padding-top: 40px;
+}
+
+@media print {
+  .schedule-section-block,
+  .schedule-table-block {
+    page-break-before: always;
+    break-before: page;
+  }
+}
+
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.schedule-table th,
+.schedule-table td {
+  border-bottom: 1px solid #e2e8f0;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.schedule-table th {
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  font-weight: 600;
+  color: #334155;
+}
+
+.schedule-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.schedule-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.schedule-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.schedule-table .empty-cell {
+  text-align: center;
 }
 
 .block-subtotals {

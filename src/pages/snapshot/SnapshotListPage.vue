@@ -130,9 +130,9 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useRouter } from 'vue-router';
 import { message, Modal } from 'ant-design-vue';
-import { studentApi } from '../api/student';
-import { snapshotApi } from '../api/snapshot';
-import SelectedSnapshotsBar from '../components/snapshot/SelectedSnapshotsBar.vue';
+import { studentApi } from '../../api/student';
+import { snapshotApi } from '../../api/snapshot';
+import SelectedSnapshotsBar from '../../components/snapshot/SelectedSnapshotsBar.vue';
 
 const router = useRouter();
 
