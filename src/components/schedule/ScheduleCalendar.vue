@@ -99,6 +99,8 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(['delete-lesson', 'open-add', 'drag-over', 'drag-leave', 'drop']);
+
 const colorMap = {
   blue: { bg: '#eff6ff', border: '#2563eb', text: '#1e3a8a' },
   green: { bg: '#f0fdf4', border: '#16a34a', text: '#14532d' },

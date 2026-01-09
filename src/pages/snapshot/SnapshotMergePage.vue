@@ -465,76 +465,87 @@ async function handleExportPreview() {
     message.error('预览内容尚未准备就绪，请稍后再试');
     return;
   }
-  
+
   exporting.value = true;
   try {
     await nextTick();
-    
+
     const pdf = new jsPDF('p', 'mm', 'a4');
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
-    const scale = 2;
-    
+    const scale = 2.5;
+
+    // 优化的html2canvas配置
+    const canvasConfig = {
+      scale,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      logging: false,
+      windowWidth: 1400, // 增加窗口宽度
+      width: 1000, // 增加渲染宽度
+    };
+
     // 1. 渲染费用明细（不包含日历和表格）
     const mainContent = invoicePreviewRef.value.cloneNode(true);
-    
+
     // 移除日历和表格区块
     const calendars = mainContent.querySelectorAll('.schedule-section-block');
     const tables = mainContent.querySelectorAll('.schedule-table-block');
     calendars.forEach(el => el.remove());
     tables.forEach(el => el.remove());
-    
-    // 临时添加到 DOM
+
+    // 临时添加到 DOM，增加宽度
     mainContent.style.position = 'absolute';
     mainContent.style.left = '-9999px';
+    mainContent.style.width = '1000px'; // 增加宽度
     document.body.appendChild(mainContent);
-    
-    const mainCanvas = await html2canvas(mainContent, {
-      scale,
-      useCORS: true,
-      backgroundColor: '#ffffff',
-      logging: false,
-    });
-    
+
+    const mainCanvas = await html2canvas(mainContent, canvasConfig);
+
     document.body.removeChild(mainContent);
-    
+
     // 添加费用明细页面
     const mainImgData = mainCanvas.toDataURL('image/png');
     const mainImgWidth = pageWidth;
     const mainImgHeight = (mainCanvas.height * pageWidth) / mainCanvas.width;
-    
+
     let heightLeft = mainImgHeight;
     let position = 0;
-    
+
     pdf.addImage(mainImgData, 'PNG', 0, position, mainImgWidth, mainImgHeight, undefined, 'FAST');
     heightLeft -= pageHeight;
-    
+
     while (heightLeft > 0) {
       position = heightLeft - mainImgHeight;
       pdf.addPage();
       pdf.addImage(mainImgData, 'PNG', 0, position, mainImgWidth, mainImgHeight, undefined, 'FAST');
       heightLeft -= pageHeight;
     }
-    
+
     // 2. 渲染每个快照的课程日历和表格
     for (const snapshot of snapshots.value) {
       const calendarEl = calendarSections.value[snapshot.id];
       const tableEl = tableSections.value[snapshot.id];
-      
+
       // 渲染日历
       if (calendarEl) {
         pdf.addPage();
-        const calendarCanvas = await html2canvas(calendarEl, {
-          scale,
-          useCORS: true,
-          backgroundColor: '#ffffff',
-          logging: false,
-        });
-        
+
+        // 克隆并设置更大宽度
+        const calClone = calendarEl.cloneNode(true);
+        calClone.style.position = 'absolute';
+        calClone.style.left = '-9999px';
+        calClone.style.width = '1000px';
+        document.body.appendChild(calClone);
+
+        const calendarCanvas = await html2canvas(calClone, canvasConfig);
+
+        document.body.removeChild(calClone);
+
         const calImgData = calendarCanvas.toDataURL('image/png');
         const calImgWidth = pageWidth;
         const calImgHeight = (calendarCanvas.height * pageWidth) / calendarCanvas.width;
-        
+
         if (calImgHeight <= pageHeight) {
           pdf.addImage(calImgData, 'PNG', 0, 0, calImgWidth, calImgHeight, undefined, 'FAST');
         } else {
@@ -543,7 +554,7 @@ async function handleExportPreview() {
           let calPosition = 0;
           pdf.addImage(calImgData, 'PNG', 0, calPosition, calImgWidth, calImgHeight, undefined, 'FAST');
           calHeightLeft -= pageHeight;
-          
+
           while (calHeightLeft > 0) {
             calPosition = calHeightLeft - calImgHeight;
             pdf.addPage();
@@ -552,21 +563,26 @@ async function handleExportPreview() {
           }
         }
       }
-      
+
       // 渲染表格
       if (tableEl) {
         pdf.addPage();
-        const tableCanvas = await html2canvas(tableEl, {
-          scale,
-          useCORS: true,
-          backgroundColor: '#ffffff',
-          logging: false,
-        });
-        
+
+        // 克隆并设置更大宽度
+        const tblClone = tableEl.cloneNode(true);
+        tblClone.style.position = 'absolute';
+        tblClone.style.left = '-9999px';
+        tblClone.style.width = '1000px';
+        document.body.appendChild(tblClone);
+
+        const tableCanvas = await html2canvas(tblClone, canvasConfig);
+
+        document.body.removeChild(tblClone);
+
         const tblImgData = tableCanvas.toDataURL('image/png');
         const tblImgWidth = pageWidth;
         const tblImgHeight = (tableCanvas.height * pageWidth) / tableCanvas.width;
-        
+
         if (tblImgHeight <= pageHeight) {
           pdf.addImage(tblImgData, 'PNG', 0, 0, tblImgWidth, tblImgHeight, undefined, 'FAST');
         } else {
@@ -575,7 +591,7 @@ async function handleExportPreview() {
           let tblPosition = 0;
           pdf.addImage(tblImgData, 'PNG', 0, tblPosition, tblImgWidth, tblImgHeight, undefined, 'FAST');
           tblHeightLeft -= pageHeight;
-          
+
           while (tblHeightLeft > 0) {
             tblPosition = tblHeightLeft - tblImgHeight;
             pdf.addPage();
@@ -585,7 +601,7 @@ async function handleExportPreview() {
         }
       }
     }
-    
+
     const months = monthSummary.value || '账单';
     const filename = `合并账单_${months.replace(/、/g, '_')}.pdf`;
     pdf.save(filename);
