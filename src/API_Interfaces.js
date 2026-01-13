@@ -9,6 +9,7 @@ export const STUDENT_API = {
   CREATE_STUDENT: '/api/students',
   UPDATE_STUDENT: (id) => `/api/students/${id}`,
   DELETE_STUDENT: (id) => `/api/students/${id}`,
+  GET_STUDENT: (id) => `/api/students/${id}`,
 };
 
 // 课程相关接口

@@ -18,6 +18,25 @@ export const gradeApi = {
     },
 
     /**
+     * 获取单个成绩详情
+     * @param {number} id - 成绩ID
+     * @returns {Promise<any>} 成绩详情
+     */
+    getGrade(id) {
+        return http.get(`${GRADE_API.CREATE_GRADE}/${id}`);
+    },
+
+    /**
+     * 更新成绩
+     * @param {number} id - 成绩ID
+     * @param {Object} data - 成绩数据
+     * @returns {Promise<any>} 更新结果
+     */
+    updateGrade(id, data) {
+        return http.put(`${GRADE_API.CREATE_GRADE}/${id}`, data);
+    },
+
+    /**
      * 获取学生成绩
      * @param {number} studentId - 学生ID
      * @returns {Promise<any>} 学生成绩列表
@@ -51,5 +70,23 @@ export const gradeApi = {
      */
     parseNaturalLanguage(text) {
         return http.post(GRADE_API.PARSE_NATURAL_LANGUAGE, { text });
+    },
+
+    /**
+     * 获取所有试卷名称列表
+     * @returns {Promise<any>} 试卷名称列表
+     */
+    getAllPaperNames() {
+        return http.get(`${GRADE_API.CREATE_GRADE}/papers/list`);
+    },
+
+    /**
+     * 获取学生在指定试卷列表中的成绩
+     * @param {number} studentId - 学生ID
+     * @param {Array<string>} paperNames - 试卷名称列表
+     * @returns {Promise<any>} 成绩列表
+     */
+    getStudentGradesByPapers(studentId, paperNames) {
+        return http.post(`${GRADE_API.CREATE_GRADE}/student/${studentId}/papers`, { paper_names: paperNames });
     }
 };

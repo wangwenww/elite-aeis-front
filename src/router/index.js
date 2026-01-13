@@ -12,6 +12,7 @@ const WordNoteDetailPage = () => import('../pages/wordnotes/WordNoteDetailPage.v
 const ClassListPage = () => import('../pages/class/ClassList.vue');
 const ClassDetailPage = () => import('../pages/class/ClassDetail.vue');
 const GradeEntryPage = () => import('../pages/grade/GradeEntry.vue');
+const GradeDisplayPage = () => import('../pages/grade/GradeDisplay.vue');
 const StudentGradesPage = () => import('../pages/student/StudentGrades.vue');
 const StudentListPage = () => import('../pages/student/StudentList.vue');
 const StudentGradeAnalysisPage = () => import('../pages/student/StudentGradeAnalysis.vue');
@@ -109,6 +110,12 @@ const router = createRouter({
       name: 'grade-entry',
       component: GradeEntryPage,
       meta: { title: '成绩录入' },
+    },
+    {
+      path: '/grades/display',
+      name: 'grade-display',
+      component: GradeDisplayPage,
+      meta: { title: '试卷成绩展示' },
     },
     {
       path: '/students/:id/grades',

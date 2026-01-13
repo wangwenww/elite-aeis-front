@@ -1,11 +1,14 @@
 <template>
   <div class="p-6 max-w-4xl mx-auto">
     <div class="mb-6 flex justify-between items-center">
-      <h1 class="text-2xl font-bold text-gray-800">成绩录入</h1>
-      <a-button type="dashed" size="large" @click="showAIModal" class="border-purple-500 text-purple-600 hover:border-purple-400">
-        <template #icon><robot-outlined /></template>
-        AI 助手
-      </a-button>
+      <h1 class="text-2xl font-bold text-gray-800">{{ isEdit ? '修改成绩' : '成绩录入' }}</h1>
+      <div class="flex gap-3">
+        <a-button @click="handleBack">返回</a-button>
+        <a-button v-if="!isEdit" type="dashed" size="large" @click="showAIModal" class="border-purple-500 text-purple-600 hover:border-purple-400">
+          <template #icon><robot-outlined /></template>
+          AI 助手
+        </a-button>
+      </div>
     </div>
 
     <div class="bg-white p-8 rounded-lg shadow-sm">
@@ -109,16 +112,22 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watch } from 'vue';
+import { ref, reactive, onMounted, watch, computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { message } from 'ant-design-vue';
 import { RobotOutlined } from '@ant-design/icons-vue';
 import { gradeApi } from '../../api/grade';
 import { studentApi } from '../../api/student';
 
+const route = useRoute();
+const router = useRouter();
 const formRef = ref(null);
 const submitting = ref(false);
 const studentsLoading = ref(false);
 const allStudentsOptions = ref([]);
+
+const gradeId = computed(() => route.query.id);
+const isEdit = computed(() => !!gradeId.value);
 
 const formState = reactive({
   student_id: undefined,
@@ -160,6 +169,23 @@ watch(() => formState.grade_type, (newType, oldType) => {
   }
 }, { immediate: true });
 
+const fetchGradeDetail = async () => {
+  if (!gradeId.value) return;
+  
+  try {
+    const res = await gradeApi.getGrade(gradeId.value);
+    const data = res.data;
+    formState.student_id = data.student_id;
+    formState.paper_name = data.paper_name;
+    formState.paper_year = data.paper_year;
+    formState.grade_type = data.grade_type;
+    formState.score_details = { ...data.score_details };
+    formState.comments = data.comments;
+  } catch (error) {
+    message.error('获取成绩详情失败: ' + error.message);
+  }
+};
+
 const fetchAllStudents = async () => {
   studentsLoading.value = true;
   try {
@@ -183,18 +209,28 @@ const filterStudentOption = (input, option) => {
 const handleSubmit = async () => {
   submitting.value = true;
   try {
-    const result = await gradeApi.createGrade(formState);
-    message.success('成绩录入成功');
-    // Reset form partially
-    formState.paper_name = '';
-    formState.comments = '';
-    // Keep student and year for continuous entry convenience
+    if (isEdit.value) {
+      await gradeApi.updateGrade(gradeId.value, formState);
+      message.success('成绩修改成功');
+    } else {
+      await gradeApi.createGrade(formState);
+      message.success('成绩录入成功');
+    }
+    
+    // 提交成功后返回上一页
+    setTimeout(() => {
+      router.back();
+    }, 500);
   } catch (error) {
     console.error('Submit error:', error);
-    message.error('录入失败: ' + error.message);
+    message.error((isEdit.value ? '修改' : '录入') + '失败: ' + error.message);
   } finally {
     submitting.value = false;
   }
+};
+
+const handleBack = () => {
+  router.back();
 };
 
 const resetForm = () => {
@@ -259,5 +295,8 @@ const parseWithAI = async () => {
 
 onMounted(() => {
   fetchAllStudents();
+  if (isEdit.value) {
+    fetchGradeDetail();
+  }
 });
 </script>

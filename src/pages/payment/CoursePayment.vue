@@ -93,7 +93,7 @@
            
            <!-- Grand Total -->
            <div class="grid grid-cols-[200px_1fr] border-b border-r border-l border-gray-400 h-10 font-bold text-lg">
-             <div class="border-r border-gray-400 flex items-center px-4">Grand Total/总金额:</div>
+             <div class="border-r border-gray-400 flex items-center px-4">Grand Total:</div>
              <div class="flex items-center px-4">{{ grandTotal > 0 ? formatCurrency(grandTotal) : '' }}</div>
            </div>
            

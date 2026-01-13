@@ -11,6 +11,15 @@ export const studentApi = {
     },
 
     /**
+     * 获取单个学生详情
+     * @param {number} id - 学生ID
+     * @returns {Promise<any>} 学生详情
+     */
+    getStudent(id) {
+        return http.get(STUDENT_API.GET_STUDENT(id));
+    },
+
+    /**
      * 创建学生
      * @param {Object} data - 学生数据
      * @param {string} data.name - The name of the student (required)

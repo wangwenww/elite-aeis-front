@@ -38,6 +38,7 @@
             <a-menu-item key="class-list">班级管理</a-menu-item>
             <a-menu-item key="student-list">学生管理</a-menu-item>
             <a-menu-item key="grade-entry">成绩录入</a-menu-item>
+            <a-menu-item key="grade-display">试卷成绩展示</a-menu-item>
             <a-menu-item key="grade-analysis">成绩分析</a-menu-item>
             <a-menu-item key="photo-crop">照片裁剪</a-menu-item>
             <a-menu-item key="payment-form">课程缴费单</a-menu-item>
@@ -76,6 +77,7 @@ const routeKeyMap = {
   'class-detail': 'class-list',
   'student-list': 'student-list',
   'grade-entry': 'grade-entry',
+  'grade-display': 'grade-display',
   'student-grades': 'class-list',
   'student-grade-analysis': 'grade-analysis',
   'photo-crop': 'photo-crop',
@@ -100,6 +102,8 @@ function handleMenuClick({ key }) {
     router.push('/students').catch(() => {});
   } else if (key === 'grade-entry') {
     router.push('/grades/entry').catch(() => {});
+  } else if (key === 'grade-display') {
+    router.push('/grades/display').catch(() => {});
   } else if (key === 'grade-analysis') {
     router.push('/students/1/analysis').catch(() => {});
   } else {
