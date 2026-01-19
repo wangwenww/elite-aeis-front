@@ -4,8 +4,11 @@ import { message } from 'ant-design-vue';
 
 const { apiBaseUrl } = getRuntimeConfig();
 
+// baseURL 设置：
+// - 开发环境：VITE_API_BASE_URL=http://localhost:8000
+// - 生产环境：VITE_API_BASE_URL 为空，使用空字符串（相对路径）
 const http = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || apiBaseUrl || '/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || apiBaseUrl || '',
   timeout: 30000, // 30秒超时
   headers: {
     'Content-Type': 'application/json',
